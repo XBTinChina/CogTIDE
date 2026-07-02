@@ -3,12 +3,18 @@
 **Cognitive Theory Ideation, Debate, and Epistemic Evaluation（认知理论构思、辩论与知识论评估）**
 —— 一个经过同行校准、以审计为先的 LLM 流水线，用于心理学、认知神经科学与认知科学中的理论生成。
 
+<p align="center"><b>📖 文档导航</b> —— 点击下方任意徽章即可跳转 👇</p>
+
 <p align="center">
-  <a href="README.md"><img src="https://img.shields.io/badge/docs-English-1f6feb?style=for-the-badge" alt="English README"></a>
-  <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/文档-简体中文-b31d28?style=for-the-badge" alt="简体中文 README"></a>
-  <a href="HOW_IT_WORKS.md"><img src="https://img.shields.io/badge/guide-How%20it%20works-2da44e?style=for-the-badge" alt="How it works"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/community-Contributing-orange?style=for-the-badge" alt="Contributing"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge" alt="License"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge&logo=readthedocs&logoColor=white" alt="English README"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/简体中文-b31d28?style=for-the-badge&logo=readthedocs&logoColor=white" alt="简体中文 README"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="HOW_IT_WORKS.md"><img src="https://img.shields.io/badge/How_it_works-2da44e?style=for-the-badge&logo=gitbook&logoColor=white" alt="How it works"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/Contributing-orange?style=for-the-badge&logo=github&logoColor=white" alt="Contributing"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-lightgrey?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License"></a>
 </p>
 
 cogTIDE 通过一条多阶段流水线，将一个开放式研究问题转化为一组候选科学理论。它与
