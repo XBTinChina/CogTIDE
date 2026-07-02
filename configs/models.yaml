@@ -11,7 +11,7 @@
 # `fallback_api_key_env` is tried if the first is unset.
 #
 # Example providers (adapt `api_base_url` / `model` / `api_key_env`):
-#   Zhipu GLM       api_base_url: https://open.bigmodel.cn/api/paas/v4  model: glm-4.6   api_key_env: ZHIPU_API_KEY
+#   Zhipu GLM       api_base_url: https://open.bigmodel.cn/api/paas/v4  model: glm-5.1   api_key_env: ZHIPU_API_KEY
 #   OpenAI          api_base_url: https://api.openai.com/v1             model: gpt-4o    api_key_env: OPENAI_API_KEY
 #   Moonshot Kimi   api_base_url: https://api.moonshot.cn/v1            model: kimi-k2   api_key_env: MOONSHOT_API_KEY
 #   Local (vLLM)    api_base_url: http://localhost:8000/v1              model: <served-model>
@@ -22,7 +22,7 @@ default:
   api_base_url: https://open.bigmodel.cn/api/paas/v4
   api_key_env: ZHIPU_API_KEY
   fallback_api_key_env: OPENAI_API_KEY
-  model: glm-4.6
+  model: glm-5.1
   temperature: 1.0
   max_tokens: 8192
   response_format_json: true

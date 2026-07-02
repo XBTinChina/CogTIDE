@@ -754,7 +754,7 @@ boundary.
   `response_format_json`, and the key-var names `api_key_env` with
   `fallback_api_key_env`. The shipped default targets Zhipu GLM
   (`api_key_env: ZHIPU_API_KEY`, `fallback_api_key_env: OPENAI_API_KEY`,
-  `model: glm-4.6`) but works with OpenAI, Moonshot Kimi, local vLLM/Ollama,
+  `model: glm-5.1`) but works with OpenAI, Moonshot Kimi, local vLLM/Ollama,
   etc. — only `api_base_url`/`model`/key-var change.
 - **`retries.yaml`** — `attempts`, `waits_seconds`, `timeout_seconds`,
   `concurrency_limit` (ships at 1 for low-tier accounts),

@@ -154,7 +154,7 @@ default:
   # api_base_url: http://localhost:11434/v1            # 本地 Ollama
   api_key_env: ZHIPU_API_KEY
   fallback_api_key_env: OPENAI_API_KEY
-  model: glm-4.6
+  model: glm-5.1
   temperature: 1.0
   max_tokens: 8192
   response_format_json: true
