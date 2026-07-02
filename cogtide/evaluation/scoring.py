@@ -38,7 +38,6 @@ from collections import defaultdict
 from cogtide.models.review_signals import (
     IdeaPeerReviewSet,
     PeerReviewEnvelope,
-    TheoryPeerReviewSet,
     TripletPeerReview,
 )
 from cogtide.models.scorecards import (
@@ -48,7 +47,6 @@ from cogtide.models.scorecards import (
     KernelScorecard,
     TripletVariantScore,
     TripletScorecard,
-    ReviewerCalibrationRecord,
 )
 
 
@@ -163,7 +161,11 @@ def _adaptive_underrated_threshold(
     if len(us_values) < min_sample:
         return fallback
     sorted_vals = sorted(us_values)
-    idx = min(int(len(sorted_vals) * percentile), len(sorted_vals) - 1)
+    # Exclusive nearest-rank: the smallest value such that `percentile`
+    # of the sample is at or below it. With the default 0.75 this flags
+    # roughly the top quartile (strict > comparison happens at the call
+    # site), including at the minimum sample size of 4.
+    idx = max(0, math.ceil(len(sorted_vals) * percentile) - 1)
     return max(0.0, sorted_vals[idx])
 
 
@@ -175,6 +177,7 @@ def compute_idea_scorecards(
     underrated_mode: str = "adaptive",
     underrated_threshold: float = 0.5,
     underrated_percentile: float = 0.75,
+    source_lens_by_id: dict[str, str] | None = None,
 ) -> list[IdeaScorecard]:
     """Compute scorecards for all reviewed Stage 1 ideas.
 
@@ -230,7 +233,7 @@ def compute_idea_scorecards(
         us = us_by_idea[idea_id]
         scorecards.append(IdeaScorecard(
             idea_id=idea_id,
-            source_lens=reviews[0].rating.target_id if reviews else "",
+            source_lens=(source_lens_by_id or {}).get(idea_id, ""),
             quality_score=_quality_score(reviews),
             unexpected_support=us,
             survival_forecast=_survival_forecast(reviews),

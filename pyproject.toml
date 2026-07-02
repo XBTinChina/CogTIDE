@@ -53,11 +53,13 @@ Issues = "https://github.com/XBTinChina/CogTIDE/issues"
 [project.scripts]
 cogtide = "cogtide.cli:main"
 
-[tool.setuptools]
-packages = ["cogtide"]
-
-[tool.setuptools.package-dir]
-cogtide = "cogtide"
+# Include cogtide and all its subpackages (an explicit `packages = [...]`
+# list would ship only the top-level package and break non-editable
+# installs). Note: prompts/, configs/, and schemas/ are resolved relative
+# to the repository root, so an editable install from a clone remains the
+# supported way to run the pipeline.
+[tool.setuptools.packages.find]
+include = ["cogtide*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

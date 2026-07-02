@@ -15,11 +15,10 @@ from __future__ import annotations
 
 import json
 import random
-from collections import Counter, defaultdict
+from collections import Counter
 from typing import Any
 
 from cogtide.evaluation.peer_review import (
-    THEORY_DIMENSIONS,
     run_theory_peer_panel,
 )
 from cogtide.evaluation.scoring import compute_kernel_scorecard
@@ -159,12 +158,14 @@ def select_council(
     for dt in selected_theories:
         council_experts.update(dt.contributing_expert_ids)
 
-    # Fill up to expert_min with under-represented experts
+    # Fill up to expert_min with under-represented experts. Stop at
+    # expert_min (not expert_max): over-filling small councils shrinks
+    # the pool of non-council experts eligible for the external panel.
     if len(council_experts) < expert_min:
         remaining = [e for e in all_expert_ids if e not in council_experts]
         remaining.sort(key=lambda e: (used_expert_counts.get(e, 0), rng.random()))
         for e in remaining:
-            if len(council_experts) >= expert_max:
+            if len(council_experts) >= expert_min:
                 break
             council_experts.add(e)
 
@@ -513,6 +514,9 @@ async def run_stage_03(
         council_set = set(council_experts)
         scorecard, panel_reviews = await run_kernel_peer_panel(
             ctx, candidate, council_set, all_expert_ids,
+            panel_size=int(
+                stage_cfg.get("external_panel_size", DEFAULT_EXTERNAL_PANEL_SIZE)
+            ),
             seed=seed + attempt_idx,
             calibration_weights=calibration_weights,
         )

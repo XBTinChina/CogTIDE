@@ -1,35 +1,116 @@
 {
-  "additionalProperties": false,
-  "description": "Scorecard for one Stage 1 idea, computed from blind peer reviews.",
-  "properties": {
-    "idea_id": {"type": "string"},
-    "source_lens": {"type": "string", "default": ""},
-    "quality_score": {"type": "number", "default": 0.0},
-    "unexpected_support": {"type": "number", "default": 0.0},
-    "survival_forecast": {"type": "number", "default": 0.0},
-    "calibration_weighted_score": {"type": "number", "default": 0.0},
-    "is_underrated": {"type": "boolean", "default": false},
-    "reviewer_disagreement": {"type": "number", "default": 0.0},
-    "diversity_contribution": {"type": "number", "default": 0.0},
-    "dimension_scores": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "dimension": {"type": "string"},
-          "mean_score": {"type": "number"},
-          "std_score": {"type": "number"},
-          "mean_predicted": {"type": "number"},
-          "actual_minus_predicted": {"type": "number"},
-          "n_reviews": {"type": "integer"}
+  "$defs": {
+    "DimensionAggregate": {
+      "additionalProperties": false,
+      "description": "Aggregated score for one quality dimension across all reviewers.",
+      "properties": {
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
         },
-        "required": ["dimension", "mean_score"]
-      }
-    },
-    "n_reviews": {"type": "integer", "default": 0},
-    "reviewer_ids": {"type": "array", "items": {"type": "string"}}
+        "mean_score": {
+          "default": 0.0,
+          "title": "Mean Score",
+          "type": "number"
+        },
+        "std_score": {
+          "default": 0.0,
+          "title": "Std Score",
+          "type": "number"
+        },
+        "mean_predicted": {
+          "default": 0.0,
+          "title": "Mean Predicted",
+          "type": "number"
+        },
+        "actual_minus_predicted": {
+          "default": 0.0,
+          "title": "Actual Minus Predicted",
+          "type": "number"
+        },
+        "n_reviews": {
+          "default": 0,
+          "title": "N Reviews",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "dimension"
+      ],
+      "title": "DimensionAggregate",
+      "type": "object"
+    }
   },
-  "required": ["idea_id"],
+  "additionalProperties": false,
+  "description": "Scorecard for one Stage 1 idea, computed from blind peer reviews.\n\nUsed by the Stage 2 coalition selector to rank and select ideas.",
+  "properties": {
+    "idea_id": {
+      "title": "Idea Id",
+      "type": "string"
+    },
+    "source_lens": {
+      "default": "",
+      "title": "Source Lens",
+      "type": "string"
+    },
+    "quality_score": {
+      "default": 0.0,
+      "title": "Quality Score",
+      "type": "number"
+    },
+    "unexpected_support": {
+      "default": 0.0,
+      "title": "Unexpected Support",
+      "type": "number"
+    },
+    "survival_forecast": {
+      "default": 0.0,
+      "title": "Survival Forecast",
+      "type": "number"
+    },
+    "calibration_weighted_score": {
+      "default": 0.0,
+      "title": "Calibration Weighted Score",
+      "type": "number"
+    },
+    "is_underrated": {
+      "default": false,
+      "title": "Is Underrated",
+      "type": "boolean"
+    },
+    "reviewer_disagreement": {
+      "default": 0.0,
+      "title": "Reviewer Disagreement",
+      "type": "number"
+    },
+    "diversity_contribution": {
+      "default": 0.0,
+      "title": "Diversity Contribution",
+      "type": "number"
+    },
+    "dimension_scores": {
+      "items": {
+        "$ref": "#/$defs/DimensionAggregate"
+      },
+      "title": "Dimension Scores",
+      "type": "array"
+    },
+    "n_reviews": {
+      "default": 0,
+      "title": "N Reviews",
+      "type": "integer"
+    },
+    "reviewer_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reviewer Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "idea_id"
+  ],
   "title": "IdeaScorecard",
   "type": "object"
 }

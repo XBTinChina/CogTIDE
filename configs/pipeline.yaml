@@ -1,16 +1,20 @@
-# Stage knobs + policy for the v2 peer-prediction pipeline.
+# Stage knobs + policy for the peer-prediction pipeline.
 # Loaded by RunContext.create() and merged into ctx.config.
 #
 # Stages read `ctx.config["stages"][stage_key]` with sane fallbacks, so any
 # knob omitted here falls back to the DEFAULT_* constants in the stage module.
+#
+# Structural constants NOT configured here:
+# - The expert roster (19 domain experts) comes from configs/agents.yaml —
+#   add or remove expert entries there to change it.
+# - Ideas per expert is fixed at 3 (one per risk tier: conservative /
+#   moderate / speculative) by the Stage 1 prompt contract.
 
 stages:
   stage_00:
     max_clarification_rounds: 5
 
   stage_01:
-    expert_count: 19
-    ideas_per_expert: 3
     challenger_rounds: 2
     challenger_chunk_size: 10
 
@@ -35,7 +39,7 @@ stages:
     pool_multiplier: 1.5
 
   stage_04:
-    expert_min: 5
+    # Cap on how many council experts brief the triplet constructor.
     expert_max: 7
     revision_rounds: 2
     external_panel_size: 5
@@ -55,11 +59,14 @@ stages:
 batching:
   challenger_chunk_size: 10
 
+# Cross-run memory. Enabled by default: after each run a memory record and
+# reviewer-calibration aggregate are written under memory/ and re-loaded by
+# later runs. Memory is advisory only; set `enabled: false` to disable it
+# entirely, or flip the per_stage toggles to control which stage consumers
+# may read retrieved memory context.
 memory:
   enabled: true
   raw_threshold_chars: 120000
-  compressed_budget_chars: 24000
-  topic_budget_chars: 12000
   retrieved_raw_record_limit: 3
   retrieval_min_score: 1
   per_stage:
@@ -68,7 +75,3 @@ memory:
     stage_02: {synthesis_judge: true}
     stage_03: {kernel_judge: true}
     stage_04: false
-
-resume:
-  enabled: true
-  output_dir: runs

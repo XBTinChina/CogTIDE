@@ -51,7 +51,6 @@ import json
 import os
 import re
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Iterable
@@ -94,23 +93,6 @@ _STOPWORDS = frozenset({
     "about", "there", "here", "over", "under", "out", "off", "any",
     "some", "all", "most", "more", "less", "than", "then", "such",
 })
-
-_DOSSIER_KEYS = {
-    "original_question",
-    "clarified_question",
-    "core_question",
-    "target_phenomenon",
-    "why_it_matters",
-    "scope",
-    "constraints",
-    "background_context",
-    "relevant_distinctions",
-    "known_assumptions",
-    "context_file_note",
-    "remaining_open_points",
-    "consolidated_summary",
-}
-
 
 # ---------------------------------------------------------------------------
 # Subfolder discovery + context ingestion

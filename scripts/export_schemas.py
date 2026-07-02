@@ -10,6 +10,8 @@ from pathlib import Path
 
 from cogtide.models import (
     ArtifactRecord,
+    IdeaScorecard,
+    PeerReviewEnvelope,
     QuestionDossier,
     Stage1Idea,
     Stage1IdeaSet,
@@ -21,6 +23,7 @@ from cogtide.models import (
     Stage4TheorySet,
     Stage4Triplet,
     SubstageManifest,
+    TripletScorecard,
 )
 
 OUT = Path(__file__).resolve().parents[1] / "schemas"
@@ -38,6 +41,9 @@ MODELS = {
     "stage4_triplet": Stage4Triplet,
     "substage_manifest": SubstageManifest,
     "artifact_record": ArtifactRecord,
+    "peer_review_envelope": PeerReviewEnvelope,
+    "idea_scorecard": IdeaScorecard,
+    "triplet_scorecard": TripletScorecard,
 }
 
 

@@ -35,7 +35,9 @@ def _load_env_file() -> None:
     env_path = Path(__file__).resolve().parents[2] / ".env"
     if not env_path.exists():
         # Fallback: Windows users sometimes save as .env.txt.
-        alt = env_path.with_suffix(".env.txt")
+        # (with_suffix would yield ".env.env.txt" for a suffix-less
+        # hidden file, so build the sibling name explicitly.)
+        alt = env_path.with_name(".env.txt")
         if alt.exists():
             print(f"[env] found {alt.name}; expected .env — please rename")
         return
@@ -43,6 +45,9 @@ def _load_env_file() -> None:
         "sk-replace-me",
         "sk-your-real-key-here",
         "your-key-here",
+        "your-api-key-here",
+        "your-zhipu-api-key-here",
+        "your-openai-key-here",
         "0000000000000000000000000000000000000000",
         "",
     }
@@ -173,13 +178,18 @@ class RunContext:
         run_dir = RUNS_ROOT / rid
         run_dir.mkdir(parents=True, exist_ok=True)
 
-        # Save run metadata
-        write_json(run_dir / "run_meta.json", {
-            "run_id": rid,
-            "topic": topic,
-            "model": model_config.model,
-            "config": config,
-        })
+        # Save run metadata — but never clobber an existing record: on
+        # resume (run_id given, meta already on disk) the original
+        # run_meta.json is the audit record of the config the earlier
+        # stages actually ran with, so it must be preserved.
+        meta_path = run_dir / "run_meta.json"
+        if not (run_id and meta_path.exists()):
+            write_json(meta_path, {
+                "run_id": rid,
+                "topic": topic,
+                "model": model_config.model,
+                "config": config,
+            })
 
         client = LLMClient(model_config=model_config, retry_config=retry_config)
         checkpoint = CheckpointManager(run_dir)

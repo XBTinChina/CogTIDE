@@ -15,8 +15,7 @@ import random
 from typing import Any
 
 from cogtide.llm.client import LLMClient, gather_with_limit
-from cogtide.llm.normalization import extract_json
-from cogtide.llm.prompt_builder import load_and_render, compose_with_shared
+from cogtide.utils.ids import stable_hash
 from cogtide.models.review_signals import (
     DimensionRating,
     PeerRating,
@@ -56,6 +55,24 @@ TRIPLET_DIMENSIONS = [
 ]
 
 
+def _safe_float(value: Any, default: float) -> float:
+    """Coerce a numeric field from raw LLM output, falling back on junk.
+
+    LLMs occasionally emit ``null``, a nested ``{"score": ...}`` object, or
+    a non-numeric string where a number belongs. One malformed review must
+    not abort a whole gather batch, so every numeric field goes through
+    this coercion instead of a bare ``float()`` cast.
+    """
+    if isinstance(value, dict):
+        value = value.get("score", default)
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def _select_reviewers(
     all_expert_ids: list[str],
     exclude_ids: set[str],
@@ -81,13 +98,10 @@ def _parse_review_response(
     raw_ratings = raw.get("ratings", {})
     dim_ratings = []
     for dim in dimensions:
-        score_val = raw_ratings.get(dim, 5.0)
-        if isinstance(score_val, dict):
-            score_val = score_val.get("score", 5.0)
         dim_ratings.append(DimensionRating(
             dimension=dim,
-            score=float(score_val) if score_val else 5.0,
-            confidence=float(raw_ratings.get(f"{dim}_confidence", 0.5)),
+            score=_safe_float(raw_ratings.get(dim), 5.0) or 5.0,
+            confidence=_safe_float(raw_ratings.get(f"{dim}_confidence"), 0.5),
             note=str(raw_ratings.get(f"{dim}_note", "")),
         ))
 
@@ -96,7 +110,7 @@ def _parse_review_response(
         target_id=target_id,
         target_kind=target_kind,
         ratings=dim_ratings,
-        overall_quality=float(raw.get("overall_quality", 5.0)),
+        overall_quality=_safe_float(raw.get("overall_quality"), 5.0),
         failure_modes=_as_list(raw.get("failure_modes", [])),
         strengths=_as_list(raw.get("strengths", [])),
         brief_assessment=str(raw.get("brief_assessment", "")),
@@ -107,12 +121,9 @@ def _parse_review_response(
     pred_dim_avgs = []
     pred_ratings = raw_preds.get("predicted_dimension_avgs", {})
     for dim in dimensions:
-        val = pred_ratings.get(dim, 5.0)
-        if isinstance(val, dict):
-            val = val.get("score", 5.0)
         pred_dim_avgs.append(DimensionRating(
             dimension=dim,
-            score=float(val) if val else 5.0,
+            score=_safe_float(pred_ratings.get(dim), 5.0) or 5.0,
         ))
 
     ou_raw = str(raw_preds.get("overrated_underrated", "fair")).lower()
@@ -127,10 +138,12 @@ def _parse_review_response(
         reviewer_id=reviewer_id,
         target_id=target_id,
         target_kind=target_kind,
-        predicted_avg_quality=float(raw_preds.get("predicted_avg_quality", 5.0)),
+        predicted_avg_quality=_safe_float(
+            raw_preds.get("predicted_avg_quality"), 5.0
+        ),
         predicted_dimension_avgs=pred_dim_avgs,
-        predicted_survival_probability=float(
-            raw_preds.get("predicted_survival_probability", 0.5)
+        predicted_survival_probability=_safe_float(
+            raw_preds.get("predicted_survival_probability"), 0.5
         ),
         predicted_survival_rationale=str(
             raw_preds.get("predicted_survival_rationale", "")
@@ -259,7 +272,7 @@ async def run_idea_peer_review(
         exclude = {author} if author else set()
         reviewers = _select_reviewers(
             all_expert_ids, exclude, n_reviewers_per_idea,
-            seed=seed + hash(idea_id) % 10000,
+            seed=seed + stable_hash(idea_id) % 10000,
         )
         reviewed_ids.append(idea_id)
         for rev_id in reviewers:
@@ -387,19 +400,16 @@ async def _collect_triplet_review(
         raw_ratings = var_data.get("ratings", {})
         dim_ratings = []
         for dim in dimensions:
-            val = raw_ratings.get(dim, 5.0)
-            if isinstance(val, dict):
-                val = val.get("score", 5.0)
             dim_ratings.append(DimensionRating(
                 dimension=dim,
-                score=float(val) if val else 5.0,
+                score=_safe_float(raw_ratings.get(dim), 5.0) or 5.0,
             ))
         return PeerRating(
             reviewer_id=reviewer_id,
             target_id=variant_id,
             target_kind="triplet_variant",
             ratings=dim_ratings,
-            overall_quality=float(var_data.get("overall_quality", 5.0)),
+            overall_quality=_safe_float(var_data.get("overall_quality"), 5.0),
             failure_modes=_as_list(var_data.get("failure_modes", [])),
             strengths=_as_list(var_data.get("strengths", [])),
             brief_assessment=str(var_data.get("brief_assessment", "")),

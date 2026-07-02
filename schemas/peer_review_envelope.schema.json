@@ -1,51 +1,206 @@
 {
-  "additionalProperties": false,
-  "description": "Complete blind review from one reviewer for one item: direct ratings + predictions.",
-  "properties": {
-    "reviewer_id": {"type": "string"},
-    "target_id": {"type": "string"},
-    "target_kind": {"enum": ["idea", "deep_theory", "kernel", "triplet_variant"], "type": "string"},
-    "rating": {
-      "type": "object",
+  "$defs": {
+    "DimensionRating": {
+      "additionalProperties": false,
+      "description": "A single rating on one quality dimension (1-10 scale).",
       "properties": {
-        "reviewer_id": {"type": "string"},
-        "target_id": {"type": "string"},
-        "target_kind": {"type": "string"},
-        "ratings": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "dimension": {"type": "string"},
-              "score": {"type": "number"},
-              "confidence": {"type": "number", "default": 0.5},
-              "note": {"type": "string", "default": ""}
-            },
-            "required": ["dimension", "score"]
-          }
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
         },
-        "overall_quality": {"type": "number"},
-        "failure_modes": {"type": "array", "items": {"type": "string"}},
-        "strengths": {"type": "array", "items": {"type": "string"}},
-        "brief_assessment": {"type": "string", "default": ""}
+        "score": {
+          "title": "Score",
+          "type": "number"
+        },
+        "confidence": {
+          "default": 0.5,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
       },
-      "required": ["reviewer_id", "target_id", "target_kind", "overall_quality"]
+      "required": [
+        "dimension",
+        "score"
+      ],
+      "title": "DimensionRating",
+      "type": "object"
+    },
+    "PeerPrediction": {
+      "additionalProperties": false,
+      "description": "Predictions about how other reviewers will rate the same item.\n\nThis is the core peer-prediction signal: reviewers predict what\nothers will think, not just what they think themselves.",
+      "properties": {
+        "reviewer_id": {
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "target_kind": {
+          "enum": [
+            "idea",
+            "deep_theory",
+            "kernel",
+            "triplet_variant"
+          ],
+          "title": "Target Kind",
+          "type": "string"
+        },
+        "predicted_avg_quality": {
+          "default": 0.0,
+          "title": "Predicted Avg Quality",
+          "type": "number"
+        },
+        "predicted_dimension_avgs": {
+          "items": {
+            "$ref": "#/$defs/DimensionRating"
+          },
+          "title": "Predicted Dimension Avgs",
+          "type": "array"
+        },
+        "predicted_survival_probability": {
+          "default": 0.5,
+          "title": "Predicted Survival Probability",
+          "type": "number"
+        },
+        "predicted_survival_rationale": {
+          "default": "",
+          "title": "Predicted Survival Rationale",
+          "type": "string"
+        },
+        "overrated_underrated": {
+          "default": "fair",
+          "enum": [
+            "overrated",
+            "fair",
+            "underrated"
+          ],
+          "title": "Overrated Underrated",
+          "type": "string"
+        },
+        "overrated_underrated_rationale": {
+          "default": "",
+          "title": "Overrated Underrated Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reviewer_id",
+        "target_id",
+        "target_kind"
+      ],
+      "title": "PeerPrediction",
+      "type": "object"
+    },
+    "PeerRating": {
+      "additionalProperties": false,
+      "description": "Direct ratings from one reviewer on one item.",
+      "properties": {
+        "reviewer_id": {
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "target_kind": {
+          "enum": [
+            "idea",
+            "deep_theory",
+            "kernel",
+            "triplet_variant"
+          ],
+          "title": "Target Kind",
+          "type": "string"
+        },
+        "ratings": {
+          "items": {
+            "$ref": "#/$defs/DimensionRating"
+          },
+          "title": "Ratings",
+          "type": "array"
+        },
+        "overall_quality": {
+          "default": 0.0,
+          "title": "Overall Quality",
+          "type": "number"
+        },
+        "failure_modes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Failure Modes",
+          "type": "array"
+        },
+        "strengths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Strengths",
+          "type": "array"
+        },
+        "brief_assessment": {
+          "default": "",
+          "title": "Brief Assessment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reviewer_id",
+        "target_id",
+        "target_kind"
+      ],
+      "title": "PeerRating",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Complete blind review from one reviewer for one item:\ndirect ratings + predictions bundled together.",
+  "properties": {
+    "reviewer_id": {
+      "title": "Reviewer Id",
+      "type": "string"
+    },
+    "target_id": {
+      "title": "Target Id",
+      "type": "string"
+    },
+    "target_kind": {
+      "enum": [
+        "idea",
+        "deep_theory",
+        "kernel",
+        "triplet_variant"
+      ],
+      "title": "Target Kind",
+      "type": "string"
+    },
+    "rating": {
+      "$ref": "#/$defs/PeerRating"
     },
     "prediction": {
-      "type": "object",
-      "properties": {
-        "reviewer_id": {"type": "string"},
-        "target_id": {"type": "string"},
-        "target_kind": {"type": "string"},
-        "predicted_avg_quality": {"type": "number"},
-        "predicted_survival_probability": {"type": "number"},
-        "overrated_underrated": {"enum": ["overrated", "fair", "underrated"], "type": "string"}
-      },
-      "required": ["reviewer_id", "target_id", "predicted_avg_quality"]
+      "$ref": "#/$defs/PeerPrediction"
     },
-    "review_round": {"type": "integer", "default": 1}
+    "review_round": {
+      "default": 1,
+      "title": "Review Round",
+      "type": "integer"
+    }
   },
-  "required": ["reviewer_id", "target_id", "target_kind", "rating", "prediction"],
+  "required": [
+    "reviewer_id",
+    "target_id",
+    "target_kind",
+    "rating",
+    "prediction"
+  ],
   "title": "PeerReviewEnvelope",
   "type": "object"
 }

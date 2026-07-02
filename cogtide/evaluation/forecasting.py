@@ -14,7 +14,6 @@ from __future__ import annotations
 from collections import defaultdict
 
 from cogtide.models.review_signals import (
-    PeerReviewEnvelope,
     IdeaPeerReviewSet,
     TheoryPeerReviewSet,
 )

@@ -19,16 +19,10 @@ import json
 from typing import Any
 
 from cogtide.evaluation.peer_review import (
-    TRIPLET_DIMENSIONS,
     run_triplet_peer_panel,
 )
 from cogtide.evaluation.scoring import compute_triplet_scorecard
-from cogtide.llm.canonicalization import (
-    STAGE4_THEORY_ALIASES,
-    STAGE4_THEORY_REQUIRED,
-)
 from cogtide.llm.prompt_builder import compose_with_shared
-from cogtide.llm.retry_wrapper import call_json_with_retry
 from cogtide.models.review_signals import TripletPeerReview
 from cogtide.models.scorecards import TripletScorecard
 from cogtide.models.stage3_kernel import Stage3Kernel, Stage3KernelSet
@@ -734,7 +728,8 @@ async def run_stage_04(
         tids = {"core": core_tid, "solid": solid_tid, "risky": risky_tid}
 
         # 4A. Constructor
-        expert_ids = kernel.council_expert_ids[:7]
+        constructor_expert_cap = int(stage_cfg.get("expert_max", 7))
+        expert_ids = kernel.council_expert_ids[:constructor_expert_cap]
         variants, panel_notes = await construct_triplet(
             ctx, kernel, expert_ids, theory_counter, dossier_summary,
             max_tokens_schedule=triplet_mt_schedule,
@@ -754,6 +749,9 @@ async def run_stage_04(
         # 4B. External peer panel (drawn from full expert pool)
         reviews, scorecard = await run_triplet_external_panel(
             ctx, kernel, variants, tids, all_expert_ids,
+            panel_size=int(
+                stage_cfg.get("external_panel_size", DEFAULT_PANEL_SIZE)
+            ),
             seed=seed + theory_counter,
         )
 

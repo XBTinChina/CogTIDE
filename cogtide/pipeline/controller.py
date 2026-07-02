@@ -24,12 +24,18 @@ from cogtide.utils.io import read_json
 
 
 def load_dossier_from_run(ctx: RunContext) -> QuestionDossier:
-    """Resume helper: read the canonical Stage 0 artifact off disk."""
+    """Resume helper: read the canonical Stage 0 artifact off disk.
+
+    Stage 0 writes timestamped ``question-<slug>-<ts>.json`` files, so a
+    Stage 0 re-run can leave several candidates in the same run dir;
+    take the latest by name (the timestamp suffix sorts lexicographically).
+    """
     stage_dir = ctx.stage_dir("stage_00")
     candidates = list(stage_dir.glob("question-*.json"))
     if not candidates:
         raise FileNotFoundError(f"No Stage 0 dossier in {stage_dir}")
-    return QuestionDossier.model_validate(read_json(candidates[0]))
+    latest = max(candidates, key=lambda p: p.name)
+    return QuestionDossier.model_validate(read_json(latest))
 
 
 def load_idea_set_from_run(ctx: RunContext) -> Stage1IdeaSet:
@@ -177,21 +183,23 @@ async def run_pipeline(
 
     # Also update calibration from Stage 2 external panel reviews
     s2_dir = ctx.stage_dir("stage_02")
+    accepted_dt_ids_s2 = {dt.id for dt in deep_theory_set.deep_theories}
     for panel_path in sorted(s2_dir.glob("external-panel-reviews-D*.json")):
         try:
             panel_data = read_json(panel_path)
             panel_set = TheoryPeerReviewSet.model_validate(panel_data)
-            dt_id = panel_path.stem.replace("external-panel-reviews-", "")
             # The deep theory survived Stage 2 if it was accepted
-            accepted_dt_ids_s2 = {dt.id for dt in deep_theory_set.deep_theories}
             s2_panel_cal = build_calibration_records(
                 panel_set, accepted_dt_ids_s2, run_id=ctx.run_id,
             )
             calibration_records = update_within_run_calibration(
                 calibration_records, s2_panel_cal,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"[Pipeline] Skipping calibration update from "
+                f"{panel_path.name} (non-fatal): {e}"
+            )
 
     # Compute updated weights for Stage 3
     cal_weights = compute_calibration_weights(calibration_records)
@@ -202,27 +210,32 @@ async def run_pipeline(
         calibration_weights=cal_weights or None,
     )
 
-    # Update calibration from Stage 3 external panel reviews
+    # Update calibration from Stage 3 external panel reviews.
+    #
+    # TODO(design): Stage 2 panel reviewers also forecast whether each deep
+    # theory would survive INTO Stage 3 (i.e. contribute to a kernel:
+    # {dtid for k in kernel_set.kernels for dtid in k.contributing_deep_theory_ids}).
+    # Scoring those forecasts against the kernel outcome here would
+    # strengthen the calibration signal, but it re-weights reviewers who
+    # already contributed records above, so it is left as a deliberate
+    # design decision rather than silently changed.
     s3_dir = ctx.stage_dir("stage_03")
-    accepted_dt_ids_in_kernels = {
-        dtid
-        for k in kernel_set.kernels
-        for dtid in k.contributing_deep_theory_ids
-    }
+    accepted_kernel_ids = {k.id for k in kernel_set.kernels}
     for panel_path in sorted(s3_dir.glob("external-panel-reviews-K*.json")):
         try:
             panel_data = read_json(panel_path)
             panel_set = TheoryPeerReviewSet.model_validate(panel_data)
-            kid = panel_path.stem.replace("external-panel-reviews-", "")
-            accepted_kernel_ids = {k.id for k in kernel_set.kernels}
             s3_panel_cal = build_calibration_records(
                 panel_set, accepted_kernel_ids, run_id=ctx.run_id,
             )
             calibration_records = update_within_run_calibration(
                 calibration_records, s3_panel_cal,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"[Pipeline] Skipping calibration update from "
+                f"{panel_path.name} (non-fatal): {e}"
+            )
 
     # ── Stage 4: Peer-Calibrated Triplet Elaboration ─────────────────
     theory_set = await run_stage_04(

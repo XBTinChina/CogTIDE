@@ -67,9 +67,10 @@ transforms a research question into structured theory candidates:
 - **Reviewer calibration** — reviewers are scored on how well their forecasts
   match reality across runs; sharper reviewers earn more weight in the
   calibration-weighted score.
-- **Cross-run memory** — an opt-in, advisory memory subsystem lets later runs
-  learn from earlier ones (topic snapshots, reviewer calibration, and an
-  allow-listed learned-policy overlay).
+- **Cross-run memory** — an advisory memory subsystem (enabled by default,
+  disable with `memory.enabled: false`) lets later runs learn from earlier
+  ones (topic snapshots, reviewer calibration, and an allow-listed
+  learned-policy overlay).
 - **Full traceability** — every canonical artifact carries stable IDs and
   lineage fields, and each run records its own provenance, so any final theory
   can be traced back through kernels, deep theories, and the original ideas.
@@ -199,9 +200,13 @@ throughput.
 
 ### `configs/pipeline.yaml` — stage knobs & memory toggles
 
-Per-stage counts (experts, ideas per expert, coalition size, panel sizes,
-targets) and the memory subsystem's settings, including the per-stage
-`memory.per_stage` toggles. Memory is opt-in.
+Per-stage knobs (coalition size, panel sizes, targets, attempt budgets,
+revision rounds) and the memory subsystem's settings. Two structural
+constants are *not* set here: the expert roster (19 experts) comes from
+`configs/agents.yaml`, and ideas-per-expert is fixed at 3 (one per risk
+tier) by the Stage 1 prompt contract. Memory is **enabled by default**
+and advisory only; disable it with `memory.enabled: false` or gate
+individual stage consumers via the `memory.per_stage` toggles.
 
 ### `configs/agents.yaml`
 
@@ -272,7 +277,7 @@ cogtide resume_pipeline --resume <run_id>
 
 ## Running with local materials
 
-To give Stage 0 project-specific context, drop `.md`, `.txt`, or `.rst` files
+To give Stage 0 project-specific context, drop `.md`, `.markdown`, `.txt`, or `.rst` files
 into a topic subfolder under `question/`:
 
 ```
@@ -324,10 +329,15 @@ back through the stages it came from.
 
 ## How scoring, calibration, and memory work
 
-Each review collects direct dimension ratings (coherence, defensibility,
-novelty, distinctiveness, fertility, upside), **peer predictions** (what a
-reviewer expects other reviewers to say), **survival forecasts** (the
-probability an item passes the next stage), and over/under-rated flags. From
+Each review collects direct dimension ratings — the dimension set depends on
+the target: ideas are rated on novelty, mechanistic promise, coherence,
+distinctiveness, and testability; deep theories and kernels on depth,
+mechanistic clarity, coherence, distinctiveness, testability, and
+non-averaging; triplet variants on coherence, defensibility, novelty,
+distinctiveness, experimental fertility, and upside-if-true — plus **peer
+predictions** (what a reviewer expects other reviewers to say), **survival
+forecasts** (the probability an item passes the next stage), and
+over/under-rated flags. From
 these, scorecards derive signals including `quality_score`, `unexpected_support`
 (actual minus predicted), `survival_forecast`, and `calibration_weighted_score`.
 
@@ -343,7 +353,8 @@ calibration-weighted score. The **memory** subsystem (`memory/`) stores a raw
 record per run, topic snapshots, project memory, and per-run/aggregate
 calibration; an allow-listed learned-policy overlay
 (`memory/learned/active/`) can be merged into the config at startup. Memory is
-advisory and opt-in per stage.
+advisory only and enabled by default; it can be disabled globally
+(`memory.enabled: false`) or gated per stage consumer (`memory.per_stage`).
 
 For a deeper walkthrough of the scoring, calibration, and memory machinery, see
 [HOW_IT_WORKS.md](HOW_IT_WORKS.md).
