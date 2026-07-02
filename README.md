@@ -159,17 +159,18 @@ they are read from the environment or a repo-root `.env`.
 
 Set `api_base_url`, `model`, and the name of the environment variable that holds
 your key (`api_key_env`, with `fallback_api_key_env` tried if the first is
-unset). Point it at whichever provider you have access to:
+unset). The shipped default targets **Zhipu GLM**; point it at whichever
+provider you have access to:
 
 ```yaml
 default:
-  provider: openai-compatible
-  api_base_url: https://api.openai.com/v1   # OpenAI
-  # api_base_url: https://open.bigmodel.cn/api/paas/v4   # Zhipu GLM
-  # api_base_url: http://localhost:11434/v1              # local Ollama
-  api_key_env: LLM_API_KEY
+  provider: zhipu
+  api_base_url: https://open.bigmodel.cn/api/paas/v4   # Zhipu GLM (default)
+  # api_base_url: https://api.openai.com/v1            # OpenAI
+  # api_base_url: http://localhost:11434/v1            # local Ollama
+  api_key_env: ZHIPU_API_KEY
   fallback_api_key_env: OPENAI_API_KEY
-  model: gpt-4o
+  model: glm-4.6
   temperature: 1.0
   max_tokens: 8192
   response_format_json: true
@@ -198,8 +199,8 @@ loads at startup.
 
 ```bash
 cp .env.example .env
-# then edit .env and set your key, e.g.:
-#   LLM_API_KEY=sk-...
+# then edit .env and set your key, e.g. (default provider is Zhipu GLM):
+#   ZHIPU_API_KEY=...
 ```
 
 `.env` is git-ignored. Shell-exported variables take precedence over `.env`
@@ -369,8 +370,8 @@ once finalized):
   title   = {cogTIDE: A Peer-Calibrated LLM Pipeline for Auditable Theory
              Generation in Psychology, Cognitive Neuroscience, and Cognitive
              Science},
-  author  = {TODO: confirm full author list},
-  year    = {TODO: confirm year},
+  author  = {Teng, Xiangbin},
+  year    = {2026},
   version = {0.1.0},
   license = {MIT},
   url     = {https://github.com/XBTinChina/CogTIDE},

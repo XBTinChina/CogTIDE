@@ -20,8 +20,7 @@ keywords = [
     "research-tools",
 ]
 authors = [
-    # TODO: confirm author name(s) and contact email before release.
-    { name = "The cogTIDE authors" },
+    { name = "Xiangbin Teng", email = "xiangbinteng@cuhk.edu.hk" },
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

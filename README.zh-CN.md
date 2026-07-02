@@ -144,17 +144,17 @@ pip install -e ".[dev]"                   # + 测试依赖（pytest）
 ### `configs/models.yaml` —— 提供方（OpenAI 兼容、与提供方无关）
 
 设置 `api_base_url`、`model`，以及保存你 key 的环境变量名（`api_key_env`，若其未设置则
-尝试 `fallback_api_key_env`）。将其指向你有权访问的任意提供方：
+尝试 `fallback_api_key_env`）。默认配置指向**智谱 GLM**；你也可将其指向有权访问的任意提供方：
 
 ```yaml
 default:
-  provider: openai-compatible
-  api_base_url: https://api.openai.com/v1   # OpenAI
-  # api_base_url: https://open.bigmodel.cn/api/paas/v4   # 智谱 GLM
-  # api_base_url: http://localhost:11434/v1              # 本地 Ollama
-  api_key_env: LLM_API_KEY
+  provider: zhipu
+  api_base_url: https://open.bigmodel.cn/api/paas/v4   # 智谱 GLM（默认）
+  # api_base_url: https://api.openai.com/v1            # OpenAI
+  # api_base_url: http://localhost:11434/v1            # 本地 Ollama
+  api_key_env: ZHIPU_API_KEY
   fallback_api_key_env: OPENAI_API_KEY
-  model: gpt-4o
+  model: glm-4.6
   temperature: 1.0
   max_tokens: 8192
   response_format_json: true
@@ -179,8 +179,8 @@ default:
 
 ```bash
 cp .env.example .env
-# 然后编辑 .env 并设置你的 key，例如：
-#   LLM_API_KEY=sk-...
+# 然后编辑 .env 并设置你的 key，例如（默认提供方为智谱 GLM）：
+#   ZHIPU_API_KEY=...
 ```
 
 `.env` 被 git 忽略。在 shell 中导出的变量优先级高于 `.env` 中的值。切勿提交真实的 key。
@@ -337,8 +337,8 @@ weight            = 0.5 + 0.5 * calibration_score      # 夹取到 [0.5, 1.0]
   title   = {cogTIDE: A Peer-Calibrated LLM Pipeline for Auditable Theory
              Generation in Psychology, Cognitive Neuroscience, and Cognitive
              Science},
-  author  = {TODO: confirm full author list},
-  year    = {TODO: confirm year},
+  author  = {Teng, Xiangbin},
+  year    = {2026},
   version = {0.1.0},
   license = {MIT},
   url     = {https://github.com/XBTinChina/CogTIDE},

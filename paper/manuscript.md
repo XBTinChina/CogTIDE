@@ -6,15 +6,15 @@
   Prose/toolbox name: cogTIDE. Python package + CLI: cogtide. Repo/paper: CogTIDE.
 -->
 
-**Authors:** TODO: Author One^1^, TODO: Author Two^2^, TODO: Author N^1,2^
+**Authors:** Xiangbin Teng^1,2^
 
 **Affiliations:**
-1. TODO: Department, Institution, City, Country.
-2. TODO: Department, Institution, City, Country.
+1. Department of Psychology, The Chinese University of Hong Kong, Shatin, New Territories, Hong Kong, China.
+2. Brain and Mind Institute, The Chinese University of Hong Kong, Shatin, New Territories, Hong Kong, China.
 
-**ORCIDs:** TODO: 0000-0000-0000-0000 (Author One); TODO: additional ORCIDs.
+**ORCIDs:** 0000-0001-5360-4957 (Xiangbin Teng).
 
-**Corresponding author:** TODO: Name, email (`TODO: corresponding@institution.edu`).
+**Corresponding author:** Xiangbin Teng, email (`xiangbinteng@cuhk.edu.hk`).
 
 **Date:** TODO: preprint date.
 

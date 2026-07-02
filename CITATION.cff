@@ -20,10 +20,11 @@ keywords:
   - peer review
   - calibration
   - auditable AI
-# TODO: confirm the full author list, affiliations, and ORCIDs before release.
 authors:
-  - family-names: "TODO-FamilyName"
-    given-names: "TODO-GivenName"
-    # orcid: "https://orcid.org/0000-0000-0000-0000"
+  - family-names: "Teng"
+    given-names: "Xiangbin"
+    orcid: "https://orcid.org/0000-0001-5360-4957"
+    email: "xiangbinteng@cuhk.edu.hk"
+    affiliation: "Department of Psychology and Brain and Mind Institute, The Chinese University of Hong Kong, Shatin, New Territories, Hong Kong, China"
 # TODO: if a preprint/DOI is minted (e.g. bioRxiv, Zenodo), add a
 # preferred-citation block here pointing at that DOI.

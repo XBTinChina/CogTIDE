@@ -1,27 +1,28 @@
 # LLM provider configuration.
 #
 # cogTIDE talks to any endpoint that speaks the OpenAI chat-completions
-# protocol. Set `api_base_url`, `model`, and the API-key environment
-# variable name for whichever provider you use, then put the actual key
-# in your environment or in a `.env` file at the repository root (see
-# `.env.example`). The key value itself never lives in this file.
+# protocol. The shipped default targets Zhipu GLM, but you can point it at
+# any compatible provider by changing `api_base_url`, `model`, and the
+# API-key environment variable name. Put the actual key in your environment
+# or in a `.env` file at the repository root (see `.env.example`). The key
+# value itself never lives in this file.
 #
 # `api_key_env` is the name of the environment variable holding your key;
 # `fallback_api_key_env` is tried if the first is unset.
 #
-# Example providers (adapt `api_base_url` / `model` to one you have access to):
-#   OpenAI          api_base_url: https://api.openai.com/v1             model: gpt-4o
-#   Zhipu GLM       api_base_url: https://open.bigmodel.cn/api/paas/v4  model: glm-4
-#   Moonshot Kimi   api_base_url: https://api.moonshot.cn/v1            model: kimi-k2
+# Example providers (adapt `api_base_url` / `model` / `api_key_env`):
+#   Zhipu GLM       api_base_url: https://open.bigmodel.cn/api/paas/v4  model: glm-4.6   api_key_env: ZHIPU_API_KEY
+#   OpenAI          api_base_url: https://api.openai.com/v1             model: gpt-4o    api_key_env: OPENAI_API_KEY
+#   Moonshot Kimi   api_base_url: https://api.moonshot.cn/v1            model: kimi-k2   api_key_env: MOONSHOT_API_KEY
 #   Local (vLLM)    api_base_url: http://localhost:8000/v1              model: <served-model>
 #   Local (Ollama)  api_base_url: http://localhost:11434/v1            model: llama3.1
 
 default:
-  provider: openai-compatible
-  api_base_url: https://api.openai.com/v1
-  api_key_env: LLM_API_KEY
+  provider: zhipu
+  api_base_url: https://open.bigmodel.cn/api/paas/v4
+  api_key_env: ZHIPU_API_KEY
   fallback_api_key_env: OPENAI_API_KEY
-  model: gpt-4o
+  model: glm-4.6
   temperature: 1.0
   max_tokens: 8192
   response_format_json: true

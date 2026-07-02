@@ -751,10 +751,11 @@ boundary.
 
 - **`models.yaml`** — the OpenAI-compatible provider config under `default`:
   `provider`, `api_base_url`, `model`, `temperature`, `max_tokens`,
-  `response_format_json`, and the key-var names `api_key_env` (`LLM_API_KEY`)
-  with `fallback_api_key_env` (`OPENAI_API_KEY`). Works with OpenAI, Zhipu GLM,
-  Moonshot Kimi, local vLLM/Ollama, etc. — only `api_base_url`/`model`/key-var
-  change.
+  `response_format_json`, and the key-var names `api_key_env` with
+  `fallback_api_key_env`. The shipped default targets Zhipu GLM
+  (`api_key_env: ZHIPU_API_KEY`, `fallback_api_key_env: OPENAI_API_KEY`,
+  `model: glm-4.6`) but works with OpenAI, Moonshot Kimi, local vLLM/Ollama,
+  etc. — only `api_base_url`/`model`/key-var change.
 - **`retries.yaml`** — `attempts`, `waits_seconds`, `timeout_seconds`,
   `concurrency_limit` (ships at 1 for low-tier accounts),
   `min_request_interval_seconds` (2.0s ⇒ ~30 rpm ceiling with concurrency 1),
@@ -768,7 +769,8 @@ boundary.
 
 **Key loading.** Keys come from the environment or a repo-root `.env`
 (`RunContext._load_env_file` auto-loads it; see `.env.example`). The
-`LLMClient` raises a clear error if neither `LLM_API_KEY` nor `OPENAI_API_KEY`
+`LLMClient` raises a clear error if neither the configured `api_key_env`
+(by default `ZHIPU_API_KEY`) nor `fallback_api_key_env` (`OPENAI_API_KEY`)
 is set. **Never hardcode keys** — the YAML holds only the *name* of the env var.
 
 Install & run (from `pyproject.toml` / `cli.py`): Python ≥ 3.10,
