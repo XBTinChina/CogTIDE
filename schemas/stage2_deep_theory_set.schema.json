@@ -1,0 +1,260 @@
+{
+  "$defs": {
+    "CoalitionAttempt": {
+      "additionalProperties": false,
+      "description": "Audit record for one Stage 2 coalition attempt, accepted or not.",
+      "properties": {
+        "attempt_index": {
+          "title": "Attempt Index",
+          "type": "integer"
+        },
+        "coalition_members": {
+          "items": {
+            "$ref": "#/$defs/CoalitionMember"
+          },
+          "title": "Coalition Members",
+          "type": "array"
+        },
+        "candidate_name": {
+          "default": "",
+          "title": "Candidate Name",
+          "type": "string"
+        },
+        "candidate_statement": {
+          "default": "",
+          "title": "Candidate Statement",
+          "type": "string"
+        },
+        "discussion_summary": {
+          "default": "",
+          "title": "Discussion Summary",
+          "type": "string"
+        },
+        "accepted": {
+          "default": false,
+          "title": "Accepted",
+          "type": "boolean"
+        },
+        "accepted_deep_theory_id": {
+          "default": "",
+          "title": "Accepted Deep Theory Id",
+          "type": "string"
+        },
+        "rejection_reason": {
+          "default": "",
+          "title": "Rejection Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "attempt_index"
+      ],
+      "title": "CoalitionAttempt",
+      "type": "object"
+    },
+    "CoalitionMember": {
+      "additionalProperties": false,
+      "description": "One participant in a Stage 2 coalition: an expert + the idea they\nbrought into the coalition.",
+      "properties": {
+        "expert_id": {
+          "title": "Expert Id",
+          "type": "string"
+        },
+        "idea_id": {
+          "title": "Idea Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "expert_id",
+        "idea_id"
+      ],
+      "title": "CoalitionMember",
+      "type": "object"
+    },
+    "Stage2DeepTheory": {
+      "additionalProperties": false,
+      "description": "One accepted deep theory produced by a Stage 2 coalition.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "mechanism_sketch": {
+          "default": "",
+          "title": "Mechanism Sketch",
+          "type": "string"
+        },
+        "key_predictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Predictions",
+          "type": "array"
+        },
+        "key_assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Key Assumptions",
+          "type": "array"
+        },
+        "tensions_and_open_questions": {
+          "default": "",
+          "title": "Tensions And Open Questions",
+          "type": "string"
+        },
+        "coalition_members": {
+          "items": {
+            "$ref": "#/$defs/CoalitionMember"
+          },
+          "title": "Coalition Members",
+          "type": "array"
+        },
+        "contributing_idea_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contributing Idea Ids",
+          "type": "array"
+        },
+        "contributing_expert_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contributing Expert Ids",
+          "type": "array"
+        },
+        "preserved_marks": {
+          "items": {
+            "enum": [
+              "UNIQUE",
+              "RISKY",
+              "SPECIAL"
+            ],
+            "type": "string"
+          },
+          "title": "Preserved Marks",
+          "type": "array"
+        },
+        "discussion_summary": {
+          "default": "",
+          "title": "Discussion Summary",
+          "type": "string"
+        },
+        "judge_notes": {
+          "default": "",
+          "title": "Judge Notes",
+          "type": "string"
+        },
+        "peer_quality_score": {
+          "default": 0.0,
+          "title": "Peer Quality Score",
+          "type": "number"
+        },
+        "peer_unexpected_support": {
+          "default": 0.0,
+          "title": "Peer Unexpected Support",
+          "type": "number"
+        },
+        "peer_survival_forecast": {
+          "default": 0.0,
+          "title": "Peer Survival Forecast",
+          "type": "number"
+        },
+        "peer_calibration_weighted_score": {
+          "default": 0.0,
+          "title": "Peer Calibration Weighted Score",
+          "type": "number"
+        },
+        "peer_reviewer_disagreement": {
+          "default": 0.0,
+          "title": "Peer Reviewer Disagreement",
+          "type": "number"
+        },
+        "peer_is_underrated": {
+          "default": false,
+          "title": "Peer Is Underrated",
+          "type": "boolean"
+        },
+        "peer_panel_notes": {
+          "default": "",
+          "title": "Peer Panel Notes",
+          "type": "string"
+        },
+        "parent_stage": {
+          "default": "stage_01",
+          "title": "Parent Stage",
+          "type": "string"
+        },
+        "parent_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "trace_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Trace Path",
+          "type": "array"
+        },
+        "origin_run_id": {
+          "default": "",
+          "title": "Origin Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "statement",
+        "rationale"
+      ],
+      "title": "Stage2DeepTheory",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Canonical Stage 2 artifact: the accepted deep theories plus the\nfull attempt log so analysts can audit failed coalitions.",
+  "properties": {
+    "deep_theories": {
+      "items": {
+        "$ref": "#/$defs/Stage2DeepTheory"
+      },
+      "title": "Deep Theories",
+      "type": "array"
+    },
+    "attempts": {
+      "items": {
+        "$ref": "#/$defs/CoalitionAttempt"
+      },
+      "title": "Attempts",
+      "type": "array"
+    },
+    "target_count": {
+      "default": 15,
+      "title": "Target Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "deep_theories"
+  ],
+  "title": "Stage2DeepTheorySet",
+  "type": "object"
+}

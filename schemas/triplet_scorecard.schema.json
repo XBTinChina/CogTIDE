@@ -1,0 +1,40 @@
+{
+  "additionalProperties": false,
+  "description": "Scorecard for a complete triplet with peer-calibrated role assignment.",
+  "properties": {
+    "parent_kernel": {"type": "string"},
+    "variant_scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "variant_role": {"type": "string"},
+          "theory_id": {"type": "string"},
+          "coherence": {"type": "number"},
+          "defensibility": {"type": "number"},
+          "novelty": {"type": "number"},
+          "distinctiveness": {"type": "number"},
+          "experimental_fertility": {"type": "number"},
+          "upside_if_true": {"type": "number"},
+          "balanced_score": {"type": "number"},
+          "robustness_score": {"type": "number"},
+          "breakthrough_potential": {"type": "number"},
+          "predicted_peer_preference_fraction": {"type": "number"},
+          "predicted_survival_fraction": {"type": "number"},
+          "predicted_underrated_fraction": {"type": "number"}
+        },
+        "required": ["variant_role", "theory_id"]
+      }
+    },
+    "assigned_core_id": {"type": "string", "default": ""},
+    "assigned_solid_id": {"type": "string", "default": ""},
+    "assigned_risky_id": {"type": "string", "default": ""},
+    "roles_reassigned": {"type": "boolean", "default": false},
+    "reassignment_rationale": {"type": "string", "default": ""},
+    "n_reviews": {"type": "integer", "default": 0},
+    "reviewer_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["parent_kernel"],
+  "title": "TripletScorecard",
+  "type": "object"
+}

@@ -1,0 +1,277 @@
+# Agent registry for the cogTIDE peer-prediction theory-generation pipeline.
+#
+# Each entry defines one agent role with its stage, substage, prompt file,
+# and optional configuration. The AgentRegistry loads this file at startup.
+#
+# Roles include drafter, critic, judge, facilitator, constructor, reviser,
+# and the peer_reviewer / external_reviewer / triplet_reviewer roles that
+# drive peer-prediction scoring.
+
+# ──────────────────────────────────────────────────────────────────────────
+# Stage 0: Clarification
+# ──────────────────────────────────────────────────────────────────────────
+- id: S00_clarifier
+  stage: stage_00
+  substage: S00.01
+  prompt: stage_00/AG_S00_SS04_question_clarifier.md
+  role: clarifier
+  output_schema: QuestionDossier
+
+# ──────────────────────────────────────────────────────────────────────────
+# Stage 1: Expert Idea Generation
+# 19 experts × 3 ideas each = 57 raw ideas (I001..I057)
+# ──────────────────────────────────────────────────────────────────────────
+- id: S01_expert_01
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_01_reinforcement_learning.md
+  role: expert
+  extra: {expert_index: 1, domain: reinforcement_learning}
+
+- id: S01_expert_02
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_02_bayesian_inference.md
+  role: expert
+  extra: {expert_index: 2, domain: bayesian_inference}
+
+- id: S01_expert_03
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_03_control_theory.md
+  role: expert
+  extra: {expert_index: 3, domain: control_theory}
+
+- id: S01_expert_04
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_04_dynamical_systems.md
+  role: expert
+  extra: {expert_index: 4, domain: dynamical_systems}
+
+- id: S01_expert_05
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_05_information_theory_compression.md
+  role: expert
+  extra: {expert_index: 5, domain: information_theory_compression}
+
+- id: S01_expert_06
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_06_cognitive_science.md
+  role: expert
+  extra: {expert_index: 6, domain: cognitive_science}
+
+- id: S01_expert_07
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_07_neuroscience.md
+  role: expert
+  extra: {expert_index: 7, domain: neuroscience}
+
+- id: S01_expert_08
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_08_decision_making.md
+  role: expert
+  extra: {expert_index: 8, domain: decision_making}
+
+- id: S01_expert_09
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_09_sensory_systems.md
+  role: expert
+  extra: {expert_index: 9, domain: sensory_systems}
+
+- id: S01_expert_10
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_10_social_cognition.md
+  role: expert
+  extra: {expert_index: 10, domain: social_cognition}
+
+- id: S01_expert_11
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_11_development_learning.md
+  role: expert
+  extra: {expert_index: 11, domain: development_learning}
+
+- id: S01_expert_12
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_12_motor_control.md
+  role: expert
+  extra: {expert_index: 12, domain: motor_control}
+
+- id: S01_expert_13
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_13_linguistic_communication.md
+  role: expert
+  extra: {expert_index: 13, domain: linguistic_communication}
+
+- id: S01_expert_14
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_14_music_rhythm.md
+  role: expert
+  extra: {expert_index: 14, domain: music_rhythm}
+
+- id: S01_expert_15
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_15_ecological_embodied_cognition.md
+  role: expert
+  extra: {expert_index: 15, domain: ecological_embodied_cognition}
+
+- id: S01_expert_16
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_16_complex_systems.md
+  role: expert
+  extra: {expert_index: 16, domain: complex_systems}
+
+- id: S01_expert_17
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_17_computational_neuroscience.md
+  role: expert
+  extra: {expert_index: 17, domain: computational_neuroscience}
+
+- id: S01_expert_18
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_18_machine_learning.md
+  role: expert
+  extra: {expert_index: 18, domain: machine_learning}
+
+- id: S01_expert_19
+  stage: stage_01
+  substage: S01.03
+  prompt: stage_01/AG_S01_SS03_expert_19_mathematics.md
+  role: expert
+  extra: {expert_index: 19, domain: mathematics}
+
+- id: S01_challenger
+  stage: stage_01
+  substage: S01.05
+  prompt: stage_01/AG_S01_SS05_challenger.md
+  role: challenger
+
+# ──────────────────────────────────────────────────────────────────────────
+# Stage 2: Peer-Screened Coalition Synthesis
+# ──────────────────────────────────────────────────────────────────────────
+
+# 2A: Blind peer reviewer for Stage 1 ideas
+- id: S02_peer_reviewer
+  stage: stage_02
+  substage: S02.01
+  prompt: stage_02/AG_S02_peer_reviewer.md
+  role: peer_reviewer
+  output_schema: PeerReviewEnvelope
+
+# 2D: Coalition drafter
+- id: S02_drafter
+  stage: stage_02
+  substage: S02.04
+  prompt: stage_02/AG_S02_drafter.md
+  role: drafter
+  output_schema: Stage2DeepTheory
+
+# 2D: Coalition critic
+- id: S02_critic
+  stage: stage_02
+  substage: S02.04
+  prompt: stage_02/AG_S02_critic.md
+  role: critic
+  output_schema: Stage2DeepTheory
+
+# 2E: External peer reviewer for candidate deep theories
+- id: S02_external_reviewer
+  stage: stage_02
+  substage: S02.05
+  prompt: stage_02/AG_S02_external_reviewer.md
+  role: external_reviewer
+  output_schema: PeerReviewEnvelope
+
+# 2F: Synthesis judge (peer-aware)
+- id: S02_judge
+  stage: stage_02
+  substage: S02.06
+  prompt: stage_02/AG_S02_judge.md
+  role: synthesis_judge
+  output_schema: JudgeVerdict
+
+# ──────────────────────────────────────────────────────────────────────────
+# Stage 3: Peer-Scored Council Synthesis
+# ──────────────────────────────────────────────────────────────────────────
+
+# 3B: Council facilitator
+- id: S03_facilitator
+  stage: stage_03
+  substage: S03.02
+  prompt: stage_03/AG_S03_facilitator.md
+  role: facilitator
+  output_schema: Stage3Kernel
+
+# 3C: External peer reviewer for candidate kernels
+- id: S03_external_reviewer
+  stage: stage_03
+  substage: S03.03
+  prompt: stage_03/AG_S03_external_reviewer.md
+  role: external_reviewer
+  output_schema: PeerReviewEnvelope
+
+# 3D: Kernel judge (peer-aware)
+- id: S03_judge
+  stage: stage_03
+  substage: S03.04
+  prompt: stage_03/AG_S03_judge.md
+  role: kernel_judge
+  output_schema: JudgeVerdict
+
+# ──────────────────────────────────────────────────────────────────────────
+# Stage 4: Peer-Calibrated Triplet Elaboration
+# ──────────────────────────────────────────────────────────────────────────
+
+# 4A: Triplet constructor
+- id: S04_constructor
+  stage: stage_04
+  substage: S04.01
+  prompt: stage_04/AG_S04_constructor.md
+  role: constructor
+  output_schema: TripletDraft
+
+# 4A: Triplet reviser
+- id: S04_reviser
+  stage: stage_04
+  substage: S04.01
+  prompt: stage_04/AG_S04_reviser.md
+  role: reviser
+  output_schema: TripletDraft
+
+# 4B: Triplet peer reviewer (external panel)
+- id: S04_triplet_reviewer
+  stage: stage_04
+  substage: S04.02
+  prompt: stage_04/AG_S04_triplet_reviewer.md
+  role: triplet_peer_panel
+  output_schema: TripletPeerReview
+
+# ──────────────────────────────────────────────────────────────────────────
+# Memory agents
+# ──────────────────────────────────────────────────────────────────────────
+
+- id: memory_compiler
+  stage: memory
+  substage: M.01
+  prompt: memory/AG_memory_compiler.md
+  role: memory_compiler
+
+- id: memory_compressor
+  stage: memory
+  substage: M.02
+  prompt: memory/AG_memory_compressor.md
+  role: memory_compressor

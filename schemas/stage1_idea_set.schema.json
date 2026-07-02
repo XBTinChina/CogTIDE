@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "Stage1Idea": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "core_claim": {
+          "title": "Core Claim",
+          "type": "string"
+        },
+        "mechanism": {
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "explains": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Explains",
+          "type": "array"
+        },
+        "main_assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Main Assumptions",
+          "type": "array"
+        },
+        "distinctive_prediction": {
+          "title": "Distinctive Prediction",
+          "type": "string"
+        },
+        "why_interesting": {
+          "title": "Why Interesting",
+          "type": "string"
+        },
+        "source_lens": {
+          "title": "Source Lens",
+          "type": "string"
+        },
+        "risk_level": {
+          "enum": [
+            "grounded",
+            "medium",
+            "bold"
+          ],
+          "title": "Risk Level",
+          "type": "string"
+        },
+        "preservation_marks": {
+          "items": {
+            "enum": [
+              "UNIQUE",
+              "RISKY",
+              "SPECIAL"
+            ],
+            "type": "string"
+          },
+          "title": "Preservation Marks",
+          "type": "array"
+        },
+        "parent_stage": {
+          "default": "stage_00",
+          "title": "Parent Stage",
+          "type": "string"
+        },
+        "parent_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "trace_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Trace Path",
+          "type": "array"
+        },
+        "origin_run_id": {
+          "default": "",
+          "title": "Origin Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "core_claim",
+        "mechanism",
+        "distinctive_prediction",
+        "why_interesting",
+        "source_lens",
+        "risk_level"
+      ],
+      "title": "Stage1Idea",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ideas": {
+      "items": {
+        "$ref": "#/$defs/Stage1Idea"
+      },
+      "title": "Ideas",
+      "type": "array"
+    },
+    "expert_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Expert Ids",
+      "type": "array"
+    },
+    "challenger_round_count": {
+      "default": 0,
+      "title": "Challenger Round Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "ideas"
+  ],
+  "title": "Stage1IdeaSet",
+  "type": "object"
+}

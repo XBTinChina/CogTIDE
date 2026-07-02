@@ -1,0 +1,30 @@
+# Retry and rate-limit policy for outbound LLM calls.
+#
+# Long, fixed waits are used deliberately: for the transient 5xx/504 errors
+# common on busy chat-completions endpoints, a few generous fixed retries
+# recover more reliably than tight exponential backoff.
+attempts: 5
+waits_seconds: [5, 15, 30, 60, 120]
+timeout_seconds: 300
+
+# Maximum number of LLM requests in flight at once. Set to 1 for strictly
+# serial execution — the safest choice for accounts with low rate limits,
+# which is why it ships as the default. Raise it once you have confirmed
+# your provider tier allows higher concurrency.
+concurrency_limit: 1
+
+# Minimum wall-clock gap enforced between consecutive outbound LLM calls
+# (by the client's internal rate limiter). At 2.0s with concurrency 1 this
+# gives a global ceiling of ~30 requests/min — conservative enough for most
+# free/standard provider tiers. Lower it (or raise concurrency_limit) only
+# after confirming your account tier allows higher throughput.
+min_request_interval_seconds: 2.0
+
+# Multiplier applied to retry waits when the error looks like a 429 /
+# rate-limit response. At 4.0 the waits above become 20 / 60 / 120 / 240 / 480s.
+rate_limit_backoff_multiplier: 4.0
+
+# Uniform jitter band for every retry wait. Each retry sleeps
+# wait * random.uniform(1 - retry_jitter, 1 + retry_jitter) seconds so
+# concurrent failing calls don't retry in lockstep.
+retry_jitter: 0.5
