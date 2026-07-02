@@ -258,6 +258,10 @@ Shared bases (`prompts/shared/`): `BASE_reasoning.md`, `BASE_json_contract.md`,
 `BASE_traceability.md` tells agents to reference prior artifacts by stable ID
 (`I012`, `D03`, `K05`, `T07`) and populate `contributing_*` fields;
 `BASE_preservation.md` defines the `UNIQUE`/`RISKY`/`SPECIAL` discipline.
+A sixth file, `BASE_framework_aids.md` (Marr's levels, Tinbergen's four
+questions, and related lenses), ships as **optional reference material**: no
+stage includes it in its composed prompts by default — add it to a stage's
+`SHARED_BASES` list if you want those lenses injected.
 
 ```mermaid
 flowchart LR

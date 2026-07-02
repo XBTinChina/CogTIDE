@@ -1,10 +1,17 @@
-"""Checkpoint manager: writes a manifest after every substage and supports resume.
+"""Checkpoint manager: substage-manifest schema and API for audit/resume.
 
 Substage manifests live at runs/<run_id>/manifests/<stage>_<substage>.json.
-The manifest records inputs, prompts, raw output paths, normalized output
-paths, validation status, and output artifact IDs. Resume reads the latest
-valid manifest for each substage and skips substages whose
+A manifest records inputs, prompts, raw output paths, normalized output
+paths, validation status, and output artifact IDs; ``is_complete`` /
+``latest_complete_substage`` skip substages whose
 validation_status == "passed".
+
+Current status: this manager is instantiated on every ``RunContext`` and
+defines the manifest schema, but the shipped stage drivers do not yet call
+``write(...)`` — they persist canonical stage artifacts directly and resume
+by re-loading those files (see the controller's ``load_*_from_run``
+helpers). Wiring manifest writes into every substage is a planned
+extension; see HOW_IT_WORKS.md §1.5.
 """
 
 from __future__ import annotations

@@ -176,3 +176,60 @@ def build_calibration_records(
         ))
 
     return records
+
+
+def apply_survival_outcome_update(
+    records: list[ReviewerCalibrationRecord],
+    review_set: IdeaPeerReviewSet | TheoryPeerReviewSet,
+    survived_ids: set[str],
+) -> list[ReviewerCalibrationRecord]:
+    """Re-score a review set's survival forecasts against a LATER stage's
+    outcome and fold ONLY the survival component into existing records.
+
+    Reviewers were asked to predict whether an item "will survive the next
+    stage", but at the moment their reviews are first folded into
+    calibration, only the current stage's acceptance is observable. Once
+    the next stage completes, this function scores the same forecasts
+    against the real downstream outcome (e.g. for Stage 2 external panels:
+    did the deep theory contribute to an accepted kernel?).
+
+    Quality-prediction components were already recorded when the review
+    set was first processed, so this update deliberately touches only
+    ``survival_prediction_accuracy`` / ``survival_predictions_made``
+    (count-weighted running average) and then recomputes the calibration
+    score and weight. Reviewers in ``review_set`` without an existing
+    record are skipped — in the pipeline every panel reviewer already has
+    one from the first pass.
+    """
+    survival_accuracy = compute_survival_prediction_accuracy(
+        review_set, survived_ids
+    )
+    counts: dict[str, int] = defaultdict(int)
+    for rev in review_set.reviews:
+        counts[rev.reviewer_id] += 1
+
+    updated: list[ReviewerCalibrationRecord] = []
+    for record in records:
+        new_acc = survival_accuracy.get(record.reviewer_id)
+        if new_acc is None:
+            updated.append(record)
+            continue
+        n_new = counts.get(record.reviewer_id, 0)
+        total_s = record.survival_predictions_made + n_new
+        if total_s > 0:
+            combined_acc = (
+                record.survival_prediction_accuracy
+                * record.survival_predictions_made
+                + new_acc * n_new
+            ) / total_s
+        else:
+            combined_acc = record.survival_prediction_accuracy
+        quality_cal = max(0.0, 1.0 - record.quality_prediction_error / 5.0)
+        cal_score = 0.5 * quality_cal + 0.5 * combined_acc
+        updated.append(record.model_copy(update={
+            "survival_prediction_accuracy": round(combined_acc, 4),
+            "survival_predictions_made": total_s,
+            "calibration_score": round(cal_score, 4),
+            "calibration_weight": round(0.5 + 0.5 * cal_score, 4),
+        }))
+    return updated

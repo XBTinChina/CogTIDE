@@ -32,6 +32,12 @@ theory-generation prototype.
   generic OpenAI-compatible endpoint with keys supplied via the environment.
 
 ### Fixed
+- Calibration: Stage 2 external-panel survival forecasts are now scored
+  against the observable Stage 3 outcome (did the deep theory contribute
+  to an accepted kernel?) once Stage 3 completes, via a survival-only
+  update that leaves the already-recorded quality components untouched.
+  Previously these next-stage forecasts were never checked against
+  next-stage reality.
 - Packaging: a non-editable `pip install .` now ships all subpackages
   (previously only the top-level package was included and the CLI crashed
   with `ModuleNotFoundError`).

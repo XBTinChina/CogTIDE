@@ -160,3 +160,70 @@ def test_filter_policy_allowlists_stage_keys():
 def test_stable_hash_is_deterministic_and_32bit():
     assert stable_hash("I007") == stable_hash("I007")
     assert 0 <= stable_hash("anything") < 2**32
+
+
+# ── Stage-2 panel survival forecasts scored against Stage-3 outcomes ──────
+
+def test_apply_survival_outcome_update_touches_only_survival():
+    from cogtide.evaluation.forecasting import apply_survival_outcome_update
+    from cogtide.models.review_signals import (
+        PeerPrediction,
+        PeerRating,
+        PeerReviewEnvelope,
+        TheoryPeerReviewSet,
+    )
+    from cogtide.models.scorecards import ReviewerCalibrationRecord
+
+    def _env(reviewer, target, survival_prob):
+        return PeerReviewEnvelope(
+            reviewer_id=reviewer,
+            target_id=target,
+            target_kind="deep_theory",
+            rating=PeerRating(
+                reviewer_id=reviewer,
+                target_id=target,
+                target_kind="deep_theory",
+                overall_quality=6.0,
+            ),
+            prediction=PeerPrediction(
+                reviewer_id=reviewer,
+                target_id=target,
+                target_kind="deep_theory",
+                predicted_avg_quality=6.0,
+                predicted_survival_probability=survival_prob,
+            ),
+        )
+
+    # rev_a predicted D01 survives (0.9) and D02 dies (0.1);
+    # only D01 actually contributed to a kernel → 2/2 correct.
+    review_set = TheoryPeerReviewSet(
+        reviews=[_env("rev_a", "D01", 0.9), _env("rev_a", "D02", 0.1)],
+        reviewer_ids=["rev_a"],
+        reviewed_item_ids=["D01", "D02"],
+        panel_kind="stage2_external",
+    )
+    existing = [
+        ReviewerCalibrationRecord(
+            reviewer_id="rev_a",
+            quality_prediction_error=1.0,
+            quality_predictions_made=2,
+            survival_prediction_accuracy=0.5,
+            survival_predictions_made=2,
+        ),
+        ReviewerCalibrationRecord(reviewer_id="rev_b"),
+    ]
+    updated = apply_survival_outcome_update(existing, review_set, {"D01"})
+    by_id = {r.reviewer_id: r for r in updated}
+
+    a = by_id["rev_a"]
+    # Survival: count-weighted merge of (0.5 over 2) and (1.0 over 2) = 0.75
+    assert a.survival_prediction_accuracy == 0.75
+    assert a.survival_predictions_made == 4
+    # Quality side untouched
+    assert a.quality_prediction_error == 1.0
+    assert a.quality_predictions_made == 2
+    # Score/weight recomputed: 0.5*(1-1/5) + 0.5*0.75 = 0.775
+    assert a.calibration_score == 0.775
+    assert a.calibration_weight == 0.5 + 0.5 * 0.775
+    # Uninvolved reviewer untouched
+    assert by_id["rev_b"] == existing[1]

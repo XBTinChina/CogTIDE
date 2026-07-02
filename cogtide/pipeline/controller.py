@@ -132,7 +132,10 @@ async def run_pipeline(
     from cogtide.stages.stage_02 import run_stage_02
     from cogtide.stages.stage_03 import run_stage_03
     from cogtide.stages.stage_04 import run_stage_04
-    from cogtide.evaluation.forecasting import build_calibration_records
+    from cogtide.evaluation.forecasting import (
+        apply_survival_outcome_update,
+        build_calibration_records,
+    )
     from cogtide.evaluation.calibration import (
         update_within_run_calibration,
         compute_calibration_weights,
@@ -210,15 +213,29 @@ async def run_pipeline(
         calibration_weights=cal_weights or None,
     )
 
-    # Update calibration from Stage 3 external panel reviews.
-    #
-    # TODO(design): Stage 2 panel reviewers also forecast whether each deep
-    # theory would survive INTO Stage 3 (i.e. contribute to a kernel:
-    # {dtid for k in kernel_set.kernels for dtid in k.contributing_deep_theory_ids}).
-    # Scoring those forecasts against the kernel outcome here would
-    # strengthen the calibration signal, but it re-weights reviewers who
-    # already contributed records above, so it is left as a deliberate
-    # design decision rather than silently changed.
+    # Now that the Stage 3 outcome is observable, score the Stage 2
+    # panels' survival forecasts against it: a deep theory "survived the
+    # next stage" if it contributed to an accepted kernel. Only the
+    # survival component updates — the quality-prediction components of
+    # these same reviews were already folded in right after Stage 2.
+    accepted_dt_ids_in_kernels = {
+        dtid
+        for k in kernel_set.kernels
+        for dtid in k.contributing_deep_theory_ids
+    }
+    for panel_path in sorted(s2_dir.glob("external-panel-reviews-D*.json")):
+        try:
+            panel_set = TheoryPeerReviewSet.model_validate(read_json(panel_path))
+            calibration_records = apply_survival_outcome_update(
+                calibration_records, panel_set, accepted_dt_ids_in_kernels,
+            )
+        except Exception as e:
+            print(
+                f"[Pipeline] Skipping survival-outcome update from "
+                f"{panel_path.name} (non-fatal): {e}"
+            )
+
+    # Update calibration from Stage 3 external panel reviews
     s3_dir = ctx.stage_dir("stage_03")
     accepted_kernel_ids = {k.id for k in kernel_set.kernels}
     for panel_path in sorted(s3_dir.glob("external-panel-reviews-K*.json")):
