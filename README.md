@@ -11,6 +11,14 @@ by outsider peer review, forecast skill, and downstream survival — not by
 synthesis fluency — and every artifact it produces is traceable back to the
 ideas it came from.
 
+<p align="center">
+  <a href="README.md"><img src="https://img.shields.io/badge/docs-English-1f6feb?style=for-the-badge" alt="English README"></a>
+  <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/文档-简体中文-b31d28?style=for-the-badge" alt="简体中文 README"></a>
+  <a href="HOW_IT_WORKS.md"><img src="https://img.shields.io/badge/guide-How%20it%20works-2da44e?style=for-the-badge" alt="How it works"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/community-Contributing-orange?style=for-the-badge" alt="Contributing"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-lightgrey?style=for-the-badge" alt="License"></a>
+</p>
+
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -113,7 +121,6 @@ CogTIDE/
 ├── scripts/               # utilities (e.g. export_schemas.py)
 ├── tests/                 # unit tests
 ├── question/              # drop local materials here for Stage 0 (scaffold only)
-├── paper/                 # manuscript / preprint sources (TODO)
 ├── pyproject.toml
 ├── .env.example           # copy to .env and add your API key
 ├── CITATION.cff

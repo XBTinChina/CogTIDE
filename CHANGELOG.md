@@ -20,8 +20,8 @@ theory-generation prototype.
 - Cross-run memory (raw/topic/project records) and a learned policy overlay.
 - Auditable run artifacts with traceable IDs and lineage.
 - Provider-agnostic LLM client for any OpenAI-compatible chat endpoint.
-- Documentation: `README.md`, `README.zh-CN.md`, `HOW_IT_WORKS.md`.
-- Preprint manuscript draft and editable Mermaid figures under `paper/`.
+- Documentation: `README.md`, `README.zh-CN.md`, `HOW_IT_WORKS.md`, with a
+  documentation navigation panel linking them alongside Contributing and License.
 - Open-source hygiene: MIT `LICENSE`, `CITATION.cff`, `CONTRIBUTING.md`,
   `.env.example`, `.gitignore`, and a network-free unit test suite.
 
