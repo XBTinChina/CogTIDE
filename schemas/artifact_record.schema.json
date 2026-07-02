@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "description": "One row in artifacts.json (the run-level artifact registry).",
+  "properties": {
+    "artifact_id": {
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "path": {
+      "title": "Path",
+      "type": "string"
+    },
+    "stage": {
+      "title": "Stage",
+      "type": "string"
+    },
+    "substage": {
+      "title": "Substage",
+      "type": "string"
+    },
+    "schema_type": {
+      "title": "Schema Type",
+      "type": "string"
+    },
+    "parent_artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parent Artifact Ids",
+      "type": "array"
+    },
+    "producing_agent": {
+      "default": "",
+      "title": "Producing Agent",
+      "type": "string"
+    },
+    "validation_status": {
+      "default": "pending",
+      "enum": [
+        "pending",
+        "passed",
+        "failed",
+        "skipped"
+      ],
+      "title": "Validation Status",
+      "type": "string"
+    },
+    "timestamp": {
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "extra": {
+      "additionalProperties": true,
+      "title": "Extra",
+      "type": "object"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "path",
+    "stage",
+    "substage",
+    "schema_type",
+    "timestamp"
+  ],
+  "title": "ArtifactRecord",
+  "type": "object"
+}

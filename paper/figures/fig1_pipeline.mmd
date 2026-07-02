@@ -1,0 +1,74 @@
+%% CogTIDE Figure 1 — End-to-end Stage 0 to Stage 4 pipeline.
+%% Editable Mermaid source for the manuscript. Render with mermaid.live or mmdc.
+%% Verified against cogtide/stages/*.py, cogtide/pipeline/controller.py, configs/pipeline.yaml.
+flowchart TB
+    Q["Research question"]
+
+    subgraph S0["Stage 0 - Question clarification"]
+        direction TB
+        MAT["Optional local materials<br/>question/SUBFOLDER (.md/.txt/.rst)"]
+        MEM0["Optional prior-run memory<br/>(advisory)"]
+        CL["Clarifier loop<br/>(up to 5 rounds)"]
+        DOS["QuestionDossier<br/>stage_00/question-*.json / .md"]
+        MAT --> CL
+        MEM0 --> CL
+        CL --> DOS
+    end
+
+    subgraph S1["Stage 1 - Multi-agent ideation"]
+        direction TB
+        IDE["19 domain-expert agents x 3 risk levels"]
+        RAW["57 raw ideas (I001..)<br/>stage_01/raw-ideas-*.json"]
+        CHAL["Challenger pass<br/>(2 rounds)"]
+        IDE --> RAW --> CHAL
+    end
+
+    CP12{{"Peer checkpoint - blind peer review + scorecards<br/>idea-peer-reviews.json, idea-scorecards.json<br/>(quality, unexpected_support, survival, calibration-weighted)"}}
+
+    subgraph S2["Stage 2 - Peer-screened coalition synthesis"]
+        direction TB
+        COAL["Coalition drafting + critique<br/>(coalition size 5)"]
+        DEEP["Deep theories (D..)<br/>coalition-deep-theories-*.json"]
+        PANEL2["External reviewer panel<br/>external-panel-reviews-D*.json"]
+        COAL --> DEEP --> PANEL2
+    end
+
+    CP23{{"Panel checkpoint - top-K by composite peer score"}}
+
+    subgraph S3["Stage 3 - Council / kernel synthesis"]
+        direction TB
+        COUN["Council facilitation<br/>(5-7 experts)"]
+        KERN["Kernel hypotheses (K..)<br/>council-kernels-*.json / .md"]
+        PANEL3["External panel scoring<br/>external-panel-reviews-K*.json"]
+        COUN --> KERN --> PANEL3
+    end
+
+    CP34{{"Panel checkpoint - top-K kernels promoted"}}
+
+    subgraph S4["Stage 4 - Core / solid / risky triplets"]
+        direction TB
+        TRIP["Each kernel expanded into a triplet<br/>core / solid / risky"]
+        REV["Peer scoring + revision<br/>(2 rounds)<br/>triplet-scorecard-K*.json, triplet-peer-reviews-K*.json"]
+        EXPL["Plain-language explainer pass"]
+        THEO["Triplet theories (T..)<br/>triplet-theories-*.json / .md"]
+        TRIP --> REV --> THEO
+        REV --> EXPL --> THEO
+    end
+
+    OUT["15 theory candidates = 5 triplets<br/>HYPOTHESES for expert review, not validated results"]
+
+    Q --> CL
+    DOS --> IDE
+    CHAL --> CP12
+    CP12 --> COAL
+    PANEL2 --> CP23
+    CP23 --> COUN
+    PANEL3 --> CP34
+    CP34 --> TRIP
+    THEO --> OUT
+
+    PROV["Run provenance: run_meta.json + artifacts.json<br/>lineage IDs threaded through every artifact"]
+    PROV -.-> S1
+    PROV -.-> S2
+    PROV -.-> S3
+    PROV -.-> S4

@@ -1,0 +1,35 @@
+{
+  "additionalProperties": false,
+  "description": "Scorecard for one Stage 1 idea, computed from blind peer reviews.",
+  "properties": {
+    "idea_id": {"type": "string"},
+    "source_lens": {"type": "string", "default": ""},
+    "quality_score": {"type": "number", "default": 0.0},
+    "unexpected_support": {"type": "number", "default": 0.0},
+    "survival_forecast": {"type": "number", "default": 0.0},
+    "calibration_weighted_score": {"type": "number", "default": 0.0},
+    "is_underrated": {"type": "boolean", "default": false},
+    "reviewer_disagreement": {"type": "number", "default": 0.0},
+    "diversity_contribution": {"type": "number", "default": 0.0},
+    "dimension_scores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dimension": {"type": "string"},
+          "mean_score": {"type": "number"},
+          "std_score": {"type": "number"},
+          "mean_predicted": {"type": "number"},
+          "actual_minus_predicted": {"type": "number"},
+          "n_reviews": {"type": "integer"}
+        },
+        "required": ["dimension", "mean_score"]
+      }
+    },
+    "n_reviews": {"type": "integer", "default": 0},
+    "reviewer_ids": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["idea_id"],
+  "title": "IdeaScorecard",
+  "type": "object"
+}

@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use cogTIDE in your research, please cite it as below."
+title: "cogTIDE: Cognitive Theory Ideation, Debate, and Epistemic Evaluation"
+abstract: >-
+  cogTIDE is a peer-calibrated, auditable multi-stage LLM pipeline for
+  generating candidate scientific theories from open-ended research questions
+  in psychology, cognitive neuroscience, and cognitive science. Generated
+  theories are hypotheses for expert review, not validated conclusions.
+type: software
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/XBTinChina/CogTIDE"  # TODO: confirm final URL
+url: "https://github.com/XBTinChina/CogTIDE"               # TODO: confirm final URL
+keywords:
+  - large language models
+  - theory generation
+  - cognitive science
+  - cognitive neuroscience
+  - psychology
+  - peer review
+  - calibration
+  - auditable AI
+# TODO: confirm the full author list, affiliations, and ORCIDs before release.
+authors:
+  - family-names: "TODO-FamilyName"
+    given-names: "TODO-GivenName"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+# TODO: if a preprint/DOI is minted (e.g. bioRxiv, Zenodo), add a
+# preferred-citation block here pointing at that DOI.

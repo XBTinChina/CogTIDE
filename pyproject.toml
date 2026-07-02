@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cogtide"
+version = "0.1.0"
+description = "cogTIDE — Cognitive Theory Ideation, Debate, and Epistemic Evaluation: a peer-calibrated, auditable LLM pipeline for theory generation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+keywords = [
+    "llm",
+    "theory-generation",
+    "cognitive-science",
+    "cognitive-neuroscience",
+    "psychology",
+    "peer-review",
+    "calibration",
+    "research-tools",
+]
+authors = [
+    # TODO: confirm author name(s) and contact email before release.
+    { name = "The cogTIDE authors" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "openai>=1.40.0",
+    "pydantic>=2.5.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[project.urls]
+# TODO: confirm final public URLs before release.
+Homepage = "https://github.com/XBTinChina/CogTIDE"
+Repository = "https://github.com/XBTinChina/CogTIDE"
+Issues = "https://github.com/XBTinChina/CogTIDE/issues"
+
+[project.scripts]
+cogtide = "cogtide.cli:main"
+
+[tool.setuptools]
+packages = ["cogtide"]
+
+[tool.setuptools.package-dir]
+cogtide = "cogtide"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -1,0 +1,53 @@
+%% CogTIDE Figure 3 — Cross-run memory / calibration / policy loop and artifact lineage.
+%% Editable Mermaid source for the manuscript. Render with mermaid.live or mmdc.
+%% Verified against cogtide/memory/*.py, cogtide/pipeline/run_context.py, controller.py.
+flowchart TB
+    subgraph RUNN["Run N (produces)"]
+        direction TB
+        ART["Run artifacts<br/>runs/RUN_ID/stage_00..04/*<br/>run_meta.json + artifacts.json"]
+        CALREC["Per-run calibration records"]
+        MEMREC["RunMemoryRecord (compiled after Stage 4)"]
+    end
+
+    subgraph MEM["memory/ (persistent, opt-in per stage)"]
+        direction TB
+        RAW["raw/RUN_ID.json"]
+        PROJ["project_memory.json + topics/TOPIC.json<br/>(compressed when over threshold)"]
+        CALDIR["calibration/RUN_ID.json + aggregate.json"]
+        POL["learned/active/policy.yaml<br/>(allow-listed; + selection_weights.json,<br/>judge_hardening.md, stage_00_guidance.md)"]
+    end
+
+    MEMREC --> RAW
+    RAW --> PROJ
+    CALREC --> CALDIR
+
+    subgraph RUNN1["Run N+1 startup / execution"]
+        direction TB
+        CFG["RunContext.create()<br/>models.yaml + pipeline.yaml"]
+        MERGE["apply_policy_overlay()<br/>allow-listed merge -> ctx.config"]
+        LOADCAL["load_calibration_aggregate()<br/>-> reviewer weights for Stage 2-4"]
+        LOADMEM["retrieve memory context<br/>(advisory, per-stage toggle)"]
+        RUN["Run N+1 pipeline (Stage 0 -> 4)"]
+    end
+
+    CFG --> MERGE
+    POL --> MERGE
+    CALDIR --> LOADCAL
+    PROJ --> LOADMEM
+    RAW --> LOADMEM
+    MERGE --> RUN
+    LOADCAL --> RUN
+    LOADMEM --> RUN
+
+    RUN -.->|"on completion becomes the next Run N"| ART
+
+    subgraph LINEAGE["Artifact lineage / traceability"]
+        direction LR
+        L1["ideas<br/>I001.."]
+        L2["deep theories D..<br/>contributing_idea_ids"]
+        L3["kernels K..<br/>contributing_deep_theory_ids"]
+        L4["theories T..<br/>parent kernel + role"]
+        L1 --> L2 --> L3 --> L4
+    end
+
+    ART -.->|"IDs threaded through every canonical artifact"| LINEAGE

@@ -1,0 +1,55 @@
+%% CogTIDE Figure 2 — Scoring signals and reviewer-calibration weighting.
+%% Editable Mermaid source for the manuscript. Render with mermaid.live or mmdc.
+%% Verified against cogtide/evaluation/scoring.py, forecasting.py, calibration.py.
+flowchart TB
+    ITEM["Item under review<br/>idea / deep theory / kernel / triplet"]
+
+    subgraph REVIEW["One blind peer review"]
+        direction TB
+        DR["Direct dimension ratings<br/>coherence, defensibility, novelty,<br/>distinctiveness, fertility, upside<br/>-> overall_quality"]
+        PP["Peer predictions<br/>predicted_avg_quality,<br/>predicted dimension avgs,<br/>over / under-rated flag"]
+        SF["Survival forecast<br/>predicted_survival_probability"]
+    end
+
+    ITEM --> DR
+    ITEM --> PP
+    ITEM --> SF
+
+    subgraph SIG["Four scorecard signals (aggregated across reviewers)"]
+        direction TB
+        QS["quality_score<br/>mean overall_quality"]
+        US["unexpected_support<br/>actual - predicted quality"]
+        SVF["survival_forecast<br/>mean predicted survival prob"]
+        CWS["calibration_weighted_score<br/>quality weighted by reviewer calibration"]
+    end
+
+    DR --> QS
+    DR --> US
+    PP --> US
+    SF --> SVF
+    DR --> CWS
+
+    subgraph CALIB["Reviewer calibration (from realized outcomes)"]
+        direction TB
+        QE["quality_prediction_error<br/>MAE: predicted vs actual peer quality"]
+        SA["survival_prediction_accuracy<br/>pred >= 0.5 vs actually survived"]
+        CS["calibration_score =<br/>0.5*quality_calibration + 0.5*survival_accuracy<br/>quality_calibration = max(0, 1 - error/5)"]
+        CW["calibration_weight =<br/>0.5 + 0.5*calibration_score, clamped [0.5, 1.0]"]
+        QE --> CS
+        SA --> CS
+        CS --> CW
+    end
+
+    CW -->|"per-reviewer weight"| CWS
+
+    JUDGE{"Stage judge<br/>rank & promote top-K"}
+    QS --> JUDGE
+    US --> JUDGE
+    SVF --> JUDGE
+    CWS --> JUDGE
+
+    PROMO["Promoted items -> next stage"]
+    JUDGE --> PROMO
+
+    PROMO -.->|"realized survival + actual peer ratings feed back"| QE
+    PROMO -.-> SA

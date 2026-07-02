@@ -1,0 +1,82 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "original_question": {
+      "title": "Original Question",
+      "type": "string"
+    },
+    "clarified_question": {
+      "title": "Clarified Question",
+      "type": "string"
+    },
+    "core_question": {
+      "title": "Core Question",
+      "type": "string"
+    },
+    "target_phenomenon": {
+      "title": "Target Phenomenon",
+      "type": "string"
+    },
+    "why_it_matters": {
+      "title": "Why It Matters",
+      "type": "string"
+    },
+    "scope": {
+      "title": "Scope",
+      "type": "string"
+    },
+    "constraints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Constraints",
+      "type": "array"
+    },
+    "background_context": {
+      "default": "",
+      "title": "Background Context",
+      "type": "string"
+    },
+    "relevant_distinctions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Relevant Distinctions",
+      "type": "array"
+    },
+    "known_assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Assumptions",
+      "type": "array"
+    },
+    "context_file_note": {
+      "default": "",
+      "title": "Context File Note",
+      "type": "string"
+    },
+    "remaining_open_points": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Remaining Open Points",
+      "type": "array"
+    },
+    "consolidated_summary": {
+      "title": "Consolidated Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "original_question",
+    "clarified_question",
+    "core_question",
+    "target_phenomenon",
+    "why_it_matters",
+    "scope",
+    "consolidated_summary"
+  ],
+  "title": "QuestionDossier",
+  "type": "object"
+}

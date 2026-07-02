@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "description": "Complete blind review from one reviewer for one item: direct ratings + predictions.",
+  "properties": {
+    "reviewer_id": {"type": "string"},
+    "target_id": {"type": "string"},
+    "target_kind": {"enum": ["idea", "deep_theory", "kernel", "triplet_variant"], "type": "string"},
+    "rating": {
+      "type": "object",
+      "properties": {
+        "reviewer_id": {"type": "string"},
+        "target_id": {"type": "string"},
+        "target_kind": {"type": "string"},
+        "ratings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "dimension": {"type": "string"},
+              "score": {"type": "number"},
+              "confidence": {"type": "number", "default": 0.5},
+              "note": {"type": "string", "default": ""}
+            },
+            "required": ["dimension", "score"]
+          }
+        },
+        "overall_quality": {"type": "number"},
+        "failure_modes": {"type": "array", "items": {"type": "string"}},
+        "strengths": {"type": "array", "items": {"type": "string"}},
+        "brief_assessment": {"type": "string", "default": ""}
+      },
+      "required": ["reviewer_id", "target_id", "target_kind", "overall_quality"]
+    },
+    "prediction": {
+      "type": "object",
+      "properties": {
+        "reviewer_id": {"type": "string"},
+        "target_id": {"type": "string"},
+        "target_kind": {"type": "string"},
+        "predicted_avg_quality": {"type": "number"},
+        "predicted_survival_probability": {"type": "number"},
+        "overrated_underrated": {"enum": ["overrated", "fair", "underrated"], "type": "string"}
+      },
+      "required": ["reviewer_id", "target_id", "predicted_avg_quality"]
+    },
+    "review_round": {"type": "integer", "default": 1}
+  },
+  "required": ["reviewer_id", "target_id", "target_kind", "rating", "prediction"],
+  "title": "PeerReviewEnvelope",
+  "type": "object"
+}

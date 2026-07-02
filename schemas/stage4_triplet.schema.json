@@ -1,0 +1,250 @@
+{
+  "$defs": {
+    "Stage4Theory": {
+      "additionalProperties": false,
+      "description": "One of the three theories in a Stage 4 triplet.\n\nThe schema is deliberately rich: Stage 4 output should be detailed\nenough that a downstream modeler can build a concrete computational\nor formal model from it. In particular, ``ontology``, ``mechanism``,\nand ``formal_sketch`` together should define the variables, the\ncausal structure, and (where tractable) the mathematical or\nalgorithmic form of the theory.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "core",
+            "solid",
+            "risky"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "parent_kernel": {
+          "title": "Parent Kernel",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        },
+        "central_claim": {
+          "title": "Central Claim",
+          "type": "string"
+        },
+        "ontology": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Ontology",
+          "type": "array"
+        },
+        "mechanism": {
+          "default": "",
+          "title": "Mechanism",
+          "type": "string"
+        },
+        "formal_sketch": {
+          "default": "",
+          "title": "Formal Sketch",
+          "type": "string"
+        },
+        "boundary_conditions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Boundary Conditions",
+          "type": "array"
+        },
+        "main_assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Main Assumptions",
+          "type": "array"
+        },
+        "distinctive_predictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Distinctive Predictions",
+          "type": "array"
+        },
+        "testable_predictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Testable Predictions",
+          "type": "array"
+        },
+        "falsifiers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Falsifiers",
+          "type": "array"
+        },
+        "measurement_strategy": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measurement Strategy",
+          "type": "array"
+        },
+        "phenomena_explained": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Phenomena Explained",
+          "type": "array"
+        },
+        "open_questions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Open Questions",
+          "type": "array"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "peer_coherence": {
+          "default": 0.0,
+          "title": "Peer Coherence",
+          "type": "number"
+        },
+        "peer_defensibility": {
+          "default": 0.0,
+          "title": "Peer Defensibility",
+          "type": "number"
+        },
+        "peer_novelty": {
+          "default": 0.0,
+          "title": "Peer Novelty",
+          "type": "number"
+        },
+        "peer_distinctiveness": {
+          "default": 0.0,
+          "title": "Peer Distinctiveness",
+          "type": "number"
+        },
+        "peer_experimental_fertility": {
+          "default": 0.0,
+          "title": "Peer Experimental Fertility",
+          "type": "number"
+        },
+        "peer_upside_if_true": {
+          "default": 0.0,
+          "title": "Peer Upside If True",
+          "type": "number"
+        },
+        "peer_balanced_score": {
+          "default": 0.0,
+          "title": "Peer Balanced Score",
+          "type": "number"
+        },
+        "role_confirmed_by_peers": {
+          "default": true,
+          "title": "Role Confirmed By Peers",
+          "type": "boolean"
+        },
+        "parent_stage": {
+          "default": "stage_03",
+          "title": "Parent Stage",
+          "type": "string"
+        },
+        "parent_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "trace_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Trace Path",
+          "type": "array"
+        },
+        "origin_run_id": {
+          "default": "",
+          "title": "Origin Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "role",
+        "parent_kernel",
+        "statement",
+        "central_claim"
+      ],
+      "title": "Stage4Theory",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A finalized triplet for one parent kernel: core + solid + risky.",
+  "properties": {
+    "parent_kernel": {
+      "title": "Parent Kernel",
+      "type": "string"
+    },
+    "panel_expert_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Panel Expert Ids",
+      "type": "array"
+    },
+    "core_theory": {
+      "$ref": "#/$defs/Stage4Theory"
+    },
+    "solid_theory": {
+      "$ref": "#/$defs/Stage4Theory"
+    },
+    "risky_theory": {
+      "$ref": "#/$defs/Stage4Theory"
+    },
+    "revision_rounds_used": {
+      "default": 0,
+      "title": "Revision Rounds Used",
+      "type": "integer"
+    },
+    "panel_notes": {
+      "default": "",
+      "title": "Panel Notes",
+      "type": "string"
+    },
+    "roles_reassigned": {
+      "default": false,
+      "title": "Roles Reassigned",
+      "type": "boolean"
+    },
+    "reassignment_rationale": {
+      "default": "",
+      "title": "Reassignment Rationale",
+      "type": "string"
+    },
+    "peer_review_panel_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Peer Review Panel Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "parent_kernel",
+    "core_theory",
+    "solid_theory",
+    "risky_theory"
+  ],
+  "title": "Stage4Triplet",
+  "type": "object"
+}

@@ -1,0 +1,101 @@
+{
+  "additionalProperties": false,
+  "description": "One manifest per substage execution. Written by CheckpointManager.",
+  "properties": {
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "stage": {
+      "title": "Stage",
+      "type": "string"
+    },
+    "substage": {
+      "title": "Substage",
+      "type": "string"
+    },
+    "started_at": {
+      "title": "Started At",
+      "type": "string"
+    },
+    "finished_at": {
+      "default": "",
+      "title": "Finished At",
+      "type": "string"
+    },
+    "input_artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Input Artifact Ids",
+      "type": "array"
+    },
+    "prompt_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Prompt Paths",
+      "type": "array"
+    },
+    "model": {
+      "default": "",
+      "title": "Model",
+      "type": "string"
+    },
+    "temperature": {
+      "default": 0.0,
+      "title": "Temperature",
+      "type": "number"
+    },
+    "raw_output_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Raw Output Paths",
+      "type": "array"
+    },
+    "normalized_output_paths": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Normalized Output Paths",
+      "type": "array"
+    },
+    "validation_status": {
+      "default": "pending",
+      "enum": [
+        "pending",
+        "passed",
+        "failed",
+        "skipped"
+      ],
+      "title": "Validation Status",
+      "type": "string"
+    },
+    "validation_path": {
+      "default": "",
+      "title": "Validation Path",
+      "type": "string"
+    },
+    "output_artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Output Artifact Ids",
+      "type": "array"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "stage",
+    "substage",
+    "started_at"
+  ],
+  "title": "SubstageManifest",
+  "type": "object"
+}
