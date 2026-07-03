@@ -40,7 +40,14 @@ class AgentRegistry:
         agents: list[AgentSpec] = []
         known = {f.name for f in AgentSpec.__dataclass_fields__.values()}
         for entry in data:
+            # Unknown top-level keys are collected into extra. An explicit
+            # `extra:` mapping in the YAML (e.g. expert_index/domain on the
+            # Stage 1 experts) must be merged in too — `extra` is itself a
+            # dataclass field name, so the comprehension alone drops it.
             extra = {k: v for k, v in entry.items() if k not in known}
+            explicit_extra = entry.get("extra")
+            if isinstance(explicit_extra, dict):
+                extra = {**explicit_extra, **extra}
             spec = AgentSpec(
                 id=entry["id"],
                 stage=entry["stage"],

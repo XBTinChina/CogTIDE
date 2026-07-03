@@ -58,7 +58,8 @@ cogTIDE 运行一条以审计为先的五阶段流水线（Stage 0 → Stage 4�
   unexpected support）的条目会被凸显出来。
 - **评审者校准** —— 评审者会根据其预测在多次运行中与实际情况的吻合程度被打分；更敏锐
   的评审者在校准加权分数中获得更大的权重。
-- **跨运行记忆** —— 一个可选的、仅作参考的记忆子系统，让后续运行能够从先前运行中学习
+- **跨运行记忆** —— 一个仅作参考的记忆子系统（默认开启，可通过
+  `memory.enabled: false` 关闭），让后续运行能够从先前运行中学习
   （主题快照、评审者校准，以及一个基于白名单的已学策略叠加层）。
 - **完全可追溯** —— 每个规范产物都带有稳定的 ID 和血缘字段，每次运行都会记录自身的
   溯源信息，因此任何最终理论都可以经由 kernel、深度理论一路回溯到最初的构思。
@@ -179,8 +180,11 @@ default:
 
 ### `configs/pipeline.yaml` —— 阶段参数与记忆开关
 
-各阶段的数量（专家数、每位专家的构思数、联盟规模、评审组规模、目标数）以及记忆子系统的
-设置，包括各阶段的 `memory.per_stage` 开关。记忆功能默认关闭，需自行开启。
+各阶段的可调参数（联盟规模、评审组规模、目标数、尝试预算、修订轮数）以及记忆子系统的
+设置。有两个结构性常量**不在**此处配置：专家阵容（19 位专家）来自
+`configs/agents.yaml`；每位专家的构思数固定为 3（每个风险等级一条），由 Stage 1
+的提示词契约决定。记忆功能**默认开启**且仅作参考；可通过 `memory.enabled: false`
+整体关闭，或通过 `memory.per_stage` 开关按阶段控制。
 
 ### `configs/agents.yaml`
 
@@ -249,7 +253,7 @@ cogtide resume_pipeline --resume <run_id>
 
 ## 使用本地材料运行
 
-要为 Stage 0 提供项目专属的上下文，请将 `.md`、`.txt` 或 `.rst` 文件放入 `question/`
+要为 Stage 0 提供项目专属的上下文，请将 `.md`、`.markdown`、`.txt` 或 `.rst` 文件放入 `question/`
 下的一个主题子文件夹：
 
 ```
@@ -297,10 +301,14 @@ runs/<run_id>/
 
 ## 评分、校准与记忆如何运作
 
-每次评审都会收集直接的维度评分（coherence 连贯性、defensibility 可辩护性、novelty
-新颖性、distinctiveness 独特性、fertility 衍生力、upside 上行潜力）、**同行预测**
-（一位评审者预期其他评审者会说什么）、**存活预测**（一个条目通过下一阶段的概率），
-以及高估/低估标记。由这些数据，评分卡推导出若干信号，包括 `quality_score`、
+每次评审都会收集直接的维度评分 —— 维度集合取决于评审对象：构思（idea）按 novelty
+新颖性、mechanistic promise 机制前景、coherence 连贯性、distinctiveness 独特性、
+testability 可检验性评分；深度理论与 kernel 按 depth 深度、mechanistic clarity
+机制清晰度、coherence 连贯性、distinctiveness 独特性、testability 可检验性、
+non-averaging 非平均化评分；三元组变体按 coherence 连贯性、defensibility 可辩护性、
+novelty 新颖性、distinctiveness 独特性、experimental fertility 实验衍生力、
+upside-if-true 上行潜力评分 —— 另外还收集**同行预测**（一位评审者预期其他评审者
+会说什么）、**存活预测**（一个条目通过下一阶段的概率），以及高估/低估标记。由这些数据，评分卡推导出若干信号，包括 `quality_score`、
 `unexpected_support`（实际减去预测）、`survival_forecast` 和
 `calibration_weighted_score`。
 
@@ -314,7 +322,8 @@ weight            = 0.5 + 0.5 * calibration_score      # 夹取到 [0.5, 1.0]
 更敏锐（校准更好）的评审者在校准加权分数中获得更大的权重。**记忆**子系统（`memory/`）
 为每次运行存储一条原始记录、主题快照、项目记忆，以及每次运行/汇总的校准；一个基于
 白名单的已学策略叠加层（`memory/learned/active/`）可以在启动时被合并进配置。记忆仅作
-参考，且按阶段可选开启。
+参考，默认开启；可通过 `memory.enabled: false` 整体关闭，或按阶段消费者
+（`memory.per_stage`）进行控制。
 
 关于评分、校准与记忆机制的更深入讲解，参见 [HOW_IT_WORKS.md](HOW_IT_WORKS.md)。
 

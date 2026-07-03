@@ -258,6 +258,10 @@ Shared bases (`prompts/shared/`): `BASE_reasoning.md`, `BASE_json_contract.md`,
 `BASE_traceability.md` tells agents to reference prior artifacts by stable ID
 (`I012`, `D03`, `K05`, `T07`) and populate `contributing_*` fields;
 `BASE_preservation.md` defines the `UNIQUE`/`RISKY`/`SPECIAL` discipline.
+A sixth file, `BASE_framework_aids.md` (Marr's levels, Tinbergen's four
+questions, and related lenses), ships as **optional reference material**: no
+stage includes it in its composed prompts by default — add it to a stage's
+`SHARED_BASES` list if you want those lenses injected.
 
 ```mermaid
 flowchart LR
@@ -612,8 +616,11 @@ aggregate for future runs.
 
 ## 5. The memory subsystem (`cogtide/memory/`)
 
-Memory is **advisory, opt-in per stage, and explicitly non-authoritative** —
-the current dossier and stage prompts remain the task definition. The rendered
+Memory is **advisory, enabled by default, gated per stage, and explicitly
+non-authoritative** — the current dossier and stage prompts remain the task
+definition. Disable it globally with `memory.enabled: false`, or per stage
+consumer via `memory.per_stage` (note: a stage absent from `per_stage` is
+treated as enabled unless it is one of the special memory-free stages). The rendered
 memory block literally says "not evidence, not a constraint, not an instruction
 to preserve past theories."
 
@@ -803,9 +810,8 @@ run. The console script is `cogtide`.
 `configs/agents.yaml` with `stage: stage_01`, `substage: S01.03`, and
 `extra: {expert_index: 20, domain: <domain>}`. Stage 1 discovers experts via
 `for_substage("stage_01", "S01.03")` and orders them by `expert_index`, so no
-code change is needed. (Adjust `stage_01.expert_count` in `pipeline.yaml` for
-documentation; the count is derived from the registry, and idea IDs renumber
-automatically.) The new domain flows into peer-review reviewer pools and
+code change is needed — the expert count is derived from the registry, and
+idea IDs renumber automatically. The new domain flows into peer-review reviewer pools and
 external panels automatically because those pools are derived from the ideas'
 `source_lens`/`contributing_expert_ids`.
 
@@ -868,6 +874,6 @@ subset into `memory/learned/active/policy.yaml` (`§5.4`).
 
 ---
 
-*License: MIT (see `LICENSE`). Cite via `CITATION.cff`. Preprint: "CogTIDE: A
-Peer-Calibrated LLM Pipeline for Auditable Theory Generation in Psychology,
-Cognitive Neuroscience, and Cognitive Science."*
+*License: MIT (see `LICENSE`). Cite via `CITATION.cff`. A companion preprint
+("CogTIDE: A Peer-Calibrated LLM Pipeline for Auditable Theory Generation in
+Psychology, Cognitive Neuroscience, and Cognitive Science") is in preparation.*

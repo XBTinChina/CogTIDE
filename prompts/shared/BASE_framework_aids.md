@@ -1,5 +1,10 @@
 # Framework aids (not bins)
 
+<!-- OPTIONAL shared base: not included in any stage's composed
+     prompts by default. To inject these lenses into a stage, add
+     "BASE_framework_aids.md" to that stage module's SHARED_BASES
+     list. See HOW_IT_WORKS.md (prompt composition). -->
+
 When you propose, synthesize, evaluate, or elaborate ideas and
 theories in this pipeline, the following classical frameworks from
 the philosophy of science and the study of adaptive systems are

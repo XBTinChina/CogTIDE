@@ -1,40 +1,141 @@
 {
-  "additionalProperties": false,
-  "description": "Scorecard for a complete triplet with peer-calibrated role assignment.",
-  "properties": {
-    "parent_kernel": {"type": "string"},
-    "variant_scores": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "variant_role": {"type": "string"},
-          "theory_id": {"type": "string"},
-          "coherence": {"type": "number"},
-          "defensibility": {"type": "number"},
-          "novelty": {"type": "number"},
-          "distinctiveness": {"type": "number"},
-          "experimental_fertility": {"type": "number"},
-          "upside_if_true": {"type": "number"},
-          "balanced_score": {"type": "number"},
-          "robustness_score": {"type": "number"},
-          "breakthrough_potential": {"type": "number"},
-          "predicted_peer_preference_fraction": {"type": "number"},
-          "predicted_survival_fraction": {"type": "number"},
-          "predicted_underrated_fraction": {"type": "number"}
+  "$defs": {
+    "TripletVariantScore": {
+      "additionalProperties": false,
+      "description": "Scores for one variant (core/solid/risky) within a triplet.",
+      "properties": {
+        "variant_role": {
+          "title": "Variant Role",
+          "type": "string"
         },
-        "required": ["variant_role", "theory_id"]
-      }
-    },
-    "assigned_core_id": {"type": "string", "default": ""},
-    "assigned_solid_id": {"type": "string", "default": ""},
-    "assigned_risky_id": {"type": "string", "default": ""},
-    "roles_reassigned": {"type": "boolean", "default": false},
-    "reassignment_rationale": {"type": "string", "default": ""},
-    "n_reviews": {"type": "integer", "default": 0},
-    "reviewer_ids": {"type": "array", "items": {"type": "string"}}
+        "theory_id": {
+          "title": "Theory Id",
+          "type": "string"
+        },
+        "coherence": {
+          "default": 0.0,
+          "title": "Coherence",
+          "type": "number"
+        },
+        "defensibility": {
+          "default": 0.0,
+          "title": "Defensibility",
+          "type": "number"
+        },
+        "novelty": {
+          "default": 0.0,
+          "title": "Novelty",
+          "type": "number"
+        },
+        "distinctiveness": {
+          "default": 0.0,
+          "title": "Distinctiveness",
+          "type": "number"
+        },
+        "experimental_fertility": {
+          "default": 0.0,
+          "title": "Experimental Fertility",
+          "type": "number"
+        },
+        "upside_if_true": {
+          "default": 0.0,
+          "title": "Upside If True",
+          "type": "number"
+        },
+        "balanced_score": {
+          "default": 0.0,
+          "title": "Balanced Score",
+          "type": "number"
+        },
+        "robustness_score": {
+          "default": 0.0,
+          "title": "Robustness Score",
+          "type": "number"
+        },
+        "breakthrough_potential": {
+          "default": 0.0,
+          "title": "Breakthrough Potential",
+          "type": "number"
+        },
+        "predicted_peer_preference_fraction": {
+          "default": 0.0,
+          "title": "Predicted Peer Preference Fraction",
+          "type": "number"
+        },
+        "predicted_survival_fraction": {
+          "default": 0.0,
+          "title": "Predicted Survival Fraction",
+          "type": "number"
+        },
+        "predicted_underrated_fraction": {
+          "default": 0.0,
+          "title": "Predicted Underrated Fraction",
+          "type": "number"
+        }
+      },
+      "required": [
+        "variant_role",
+        "theory_id"
+      ],
+      "title": "TripletVariantScore",
+      "type": "object"
+    }
   },
-  "required": ["parent_kernel"],
+  "additionalProperties": false,
+  "description": "Scorecard for a complete triplet: three variants scored and\ncompared for role assignment.\n\nOperational definitions:\n- Core = highest balanced score across quality dimensions.\n- Solid = highest robustness/defensibility above minimum novelty.\n- Risky = highest breakthrough-potential above minimum coherence.",
+  "properties": {
+    "parent_kernel": {
+      "title": "Parent Kernel",
+      "type": "string"
+    },
+    "variant_scores": {
+      "items": {
+        "$ref": "#/$defs/TripletVariantScore"
+      },
+      "title": "Variant Scores",
+      "type": "array"
+    },
+    "assigned_core_id": {
+      "default": "",
+      "title": "Assigned Core Id",
+      "type": "string"
+    },
+    "assigned_solid_id": {
+      "default": "",
+      "title": "Assigned Solid Id",
+      "type": "string"
+    },
+    "assigned_risky_id": {
+      "default": "",
+      "title": "Assigned Risky Id",
+      "type": "string"
+    },
+    "roles_reassigned": {
+      "default": false,
+      "title": "Roles Reassigned",
+      "type": "boolean"
+    },
+    "reassignment_rationale": {
+      "default": "",
+      "title": "Reassignment Rationale",
+      "type": "string"
+    },
+    "n_reviews": {
+      "default": 0,
+      "title": "N Reviews",
+      "type": "integer"
+    },
+    "reviewer_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reviewer Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "parent_kernel"
+  ],
   "title": "TripletScorecard",
   "type": "object"
 }

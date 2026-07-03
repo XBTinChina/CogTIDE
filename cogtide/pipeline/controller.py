@@ -24,12 +24,18 @@ from cogtide.utils.io import read_json
 
 
 def load_dossier_from_run(ctx: RunContext) -> QuestionDossier:
-    """Resume helper: read the canonical Stage 0 artifact off disk."""
+    """Resume helper: read the canonical Stage 0 artifact off disk.
+
+    Stage 0 writes timestamped ``question-<slug>-<ts>.json`` files, so a
+    Stage 0 re-run can leave several candidates in the same run dir;
+    take the latest by name (the timestamp suffix sorts lexicographically).
+    """
     stage_dir = ctx.stage_dir("stage_00")
     candidates = list(stage_dir.glob("question-*.json"))
     if not candidates:
         raise FileNotFoundError(f"No Stage 0 dossier in {stage_dir}")
-    return QuestionDossier.model_validate(read_json(candidates[0]))
+    latest = max(candidates, key=lambda p: p.name)
+    return QuestionDossier.model_validate(read_json(latest))
 
 
 def load_idea_set_from_run(ctx: RunContext) -> Stage1IdeaSet:
@@ -126,7 +132,10 @@ async def run_pipeline(
     from cogtide.stages.stage_02 import run_stage_02
     from cogtide.stages.stage_03 import run_stage_03
     from cogtide.stages.stage_04 import run_stage_04
-    from cogtide.evaluation.forecasting import build_calibration_records
+    from cogtide.evaluation.forecasting import (
+        apply_survival_outcome_update,
+        build_calibration_records,
+    )
     from cogtide.evaluation.calibration import (
         update_within_run_calibration,
         compute_calibration_weights,
@@ -177,21 +186,23 @@ async def run_pipeline(
 
     # Also update calibration from Stage 2 external panel reviews
     s2_dir = ctx.stage_dir("stage_02")
+    accepted_dt_ids_s2 = {dt.id for dt in deep_theory_set.deep_theories}
     for panel_path in sorted(s2_dir.glob("external-panel-reviews-D*.json")):
         try:
             panel_data = read_json(panel_path)
             panel_set = TheoryPeerReviewSet.model_validate(panel_data)
-            dt_id = panel_path.stem.replace("external-panel-reviews-", "")
             # The deep theory survived Stage 2 if it was accepted
-            accepted_dt_ids_s2 = {dt.id for dt in deep_theory_set.deep_theories}
             s2_panel_cal = build_calibration_records(
                 panel_set, accepted_dt_ids_s2, run_id=ctx.run_id,
             )
             calibration_records = update_within_run_calibration(
                 calibration_records, s2_panel_cal,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"[Pipeline] Skipping calibration update from "
+                f"{panel_path.name} (non-fatal): {e}"
+            )
 
     # Compute updated weights for Stage 3
     cal_weights = compute_calibration_weights(calibration_records)
@@ -202,27 +213,46 @@ async def run_pipeline(
         calibration_weights=cal_weights or None,
     )
 
-    # Update calibration from Stage 3 external panel reviews
-    s3_dir = ctx.stage_dir("stage_03")
+    # Now that the Stage 3 outcome is observable, score the Stage 2
+    # panels' survival forecasts against it: a deep theory "survived the
+    # next stage" if it contributed to an accepted kernel. Only the
+    # survival component updates — the quality-prediction components of
+    # these same reviews were already folded in right after Stage 2.
     accepted_dt_ids_in_kernels = {
         dtid
         for k in kernel_set.kernels
         for dtid in k.contributing_deep_theory_ids
     }
+    for panel_path in sorted(s2_dir.glob("external-panel-reviews-D*.json")):
+        try:
+            panel_set = TheoryPeerReviewSet.model_validate(read_json(panel_path))
+            calibration_records = apply_survival_outcome_update(
+                calibration_records, panel_set, accepted_dt_ids_in_kernels,
+            )
+        except Exception as e:
+            print(
+                f"[Pipeline] Skipping survival-outcome update from "
+                f"{panel_path.name} (non-fatal): {e}"
+            )
+
+    # Update calibration from Stage 3 external panel reviews
+    s3_dir = ctx.stage_dir("stage_03")
+    accepted_kernel_ids = {k.id for k in kernel_set.kernels}
     for panel_path in sorted(s3_dir.glob("external-panel-reviews-K*.json")):
         try:
             panel_data = read_json(panel_path)
             panel_set = TheoryPeerReviewSet.model_validate(panel_data)
-            kid = panel_path.stem.replace("external-panel-reviews-", "")
-            accepted_kernel_ids = {k.id for k in kernel_set.kernels}
             s3_panel_cal = build_calibration_records(
                 panel_set, accepted_kernel_ids, run_id=ctx.run_id,
             )
             calibration_records = update_within_run_calibration(
                 calibration_records, s3_panel_cal,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            print(
+                f"[Pipeline] Skipping calibration update from "
+                f"{panel_path.name} (non-fatal): {e}"
+            )
 
     # ── Stage 4: Peer-Calibrated Triplet Elaboration ─────────────────
     theory_set = await run_stage_04(

@@ -17,15 +17,10 @@ from __future__ import annotations
 
 import json
 import random
-from collections import Counter, defaultdict
-from datetime import datetime
+from collections import Counter
 from typing import Any
 
-from cogtide.evaluation.calibration import compute_calibration_weights
-from cogtide.evaluation.forecasting import build_calibration_records
 from cogtide.evaluation.peer_review import (
-    IDEA_DIMENSIONS,
-    THEORY_DIMENSIONS,
     run_idea_peer_review,
     run_theory_peer_panel,
 )
@@ -39,14 +34,13 @@ from cogtide.llm.canonicalization import (
     STAGE2_DRAFT_ALIASES,
     STAGE2_DRAFT_REQUIRED,
 )
-from cogtide.llm.prompt_builder import compose_with_shared, load_and_render
+from cogtide.llm.prompt_builder import compose_with_shared
 from cogtide.llm.retry_wrapper import call_json_with_retry
 from cogtide.memory import extract_keywords, retrieve_for_consumer
 from cogtide.models.review_signals import IdeaPeerReviewSet, TheoryPeerReviewSet
 from cogtide.models.scorecards import (
     DeepTheoryScorecard,
     IdeaScorecard,
-    ReviewerCalibrationRecord,
 )
 from cogtide.models.stage1_idea import Stage1Idea, Stage1IdeaSet
 from cogtide.models.stage2_deep_theory import (
@@ -56,7 +50,6 @@ from cogtide.models.stage2_deep_theory import (
     Stage2DeepTheorySet,
 )
 from cogtide.pipeline.run_context import RunContext
-from cogtide.utils.ids import stable_hash
 from cogtide.utils.io import write_json
 
 # Shared prompt bases used in all Stage 2 agent compositions
@@ -152,11 +145,13 @@ async def run_idea_screening(
 def aggregate_idea_scorecards(
     review_set: IdeaPeerReviewSet,
     calibration_weights: dict[str, float] | None = None,
+    source_lens_by_id: dict[str, str] | None = None,
 ) -> list[IdeaScorecard]:
     """Compute IdeaScorecard for every reviewed idea."""
     return compute_idea_scorecards(
         review_set,
         calibration_weights=calibration_weights,
+        source_lens_by_id=source_lens_by_id,
     )
 
 
@@ -597,7 +592,9 @@ async def run_stage_02(
     if calibration_weights:
         print(f"  Using historical calibration weights for {len(calibration_weights)} reviewers")
     scorecards_list = aggregate_idea_scorecards(
-        review_set, calibration_weights=calibration_weights,
+        review_set,
+        calibration_weights=calibration_weights,
+        source_lens_by_id={i.id: i.source_lens for i in idea_set.ideas},
     )
     scorecards = {sc.idea_id: sc for sc in scorecards_list}
     write_json(
@@ -682,6 +679,9 @@ async def run_stage_02(
         coalition_experts = {m.expert_id for m in members}
         scorecard, panel_reviews = await run_external_panel_on_candidate(
             ctx, candidate, coalition_experts, expert_ids,
+            panel_size=int(
+                stage_cfg.get("external_panel_size", DEFAULT_EXTERNAL_PANEL_SIZE)
+            ),
             seed=seed + attempt_idx,
             calibration_weights=calibration_weights,
         )
